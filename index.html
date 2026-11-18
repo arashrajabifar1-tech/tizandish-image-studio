@@ -145,7 +145,7 @@ const sizeSel=$('#size'),customField=$('#customField'),customHField=$('#customHF
 const formatSel=$('#format'),quality=$('#quality'),qualityV=$('#qualityV'),qualityField=$('#qualityField');
 const processBtn=$('#process'),downloadBtn=$('#download'),resetBtn=$('#reset'),status=$('#status'),stats=$('#stats');
 const progress=$('#progress'),bar=$('#bar'),testReport=$('#testReport');
-const cropCanvas=$('#cropCanvas'),cropCtx=cropCanvas.getContext('2d');
+const cropFrame=$('#cropFrame'),cropCanvas=$('#cropCanvas'),cropCtx=cropCanvas.getContext('2d');
 const cropOverlay=$('#cropOverlay'),cropLens=$('#cropLens'),cropLensCtx=cropLens.getContext('2d'),magicOverlay=$('#magicOverlay'),magicOverlayCtx=magicOverlay.getContext('2d'),geometryHint=$('#geometryHint'),geometryStatus=$('#geometryStatus');
 const cropModeNone=$('#cropModeNone'),cropModeFree=$('#cropModeFree'),cropModePerspective=$('#cropModePerspective'),cropModeLasso=$('#cropModeLasso'),cropModeEllipse=$('#cropModeEllipse'),applyCropBtn=$('#applyCrop'),resetGeometryBtn=$('#resetGeometry');
 const magicToggle=$('#magicToggle'),magicStrategy=$('#magicStrategy'),magicBrushSize=$('#magicBrushSize'),magicBrushValue=$('#magicBrushValue'),magicTolerance=$('#magicTolerance'),magicToleranceValue=$('#magicToleranceValue'),magicUndo=$('#magicUndo'),magicClear=$('#magicClear'),magicApply=$('#magicApply'),magicStatus=$('#magicStatus');
@@ -295,7 +295,7 @@ function loadOpenCV(){
  if(window.cv&&window.cv.Mat&&window.cv.inpaint)return Promise.resolve(window.cv);
  if(window.__royalOpenCVPromise)return window.__royalOpenCVPromise;
  window.__royalOpenCVPromise=new Promise((resolve,reject)=>{
-  let done=false;const finish=(err,cv)=>{if(done)return;done=true;clearTimeout(timer);err?reject(err):resolve(cv)};
+  let done=false;const finish=(err,cv)=>{if(done)return;done=true;clearTimeout(timer);if(err)window.__royalOpenCVPromise=null;err?reject(err):resolve(cv)};
   const timer=setTimeout(()=>finish(new Error('بارگذاری OpenCV طول کشید یا اتصال اینترنت در دسترس نیست.')),45000);
   const script=document.createElement('script');script.src='https://docs.opencv.org/4.x/opencv.js';script.async=true;
   script.onerror=()=>finish(new Error('بارگذاری کتابخانهٔ پاک‌سازی ناموفق بود؛ اتصال اینترنت را بررسی کنید.'));
@@ -305,11 +305,11 @@ function loadOpenCV(){
 }
 async function applyMagicErase(){
  if(!sourceBitmap||!magicMaskCanvas||!magicStrokes.length){setMagicStatus('ابتدا با قلم ناحیه‌ای را انتخاب کنید.',true);return}
- magicApply.disabled=true;setMagicStatus('در حال بارگذاری موتور پاک‌سازی و آماده‌سازی تصویر…');let src=null,mask=null,dst=null;
+ magicApply.disabled=true;setMagicStatus('در حال بارگذاری موتور پاک‌سازی و آماده‌سازی تصویر…');let src=null,srcRGBA=null,mask=null,dst=null;
  try{
   const cv=await loadOpenCV(),input=canvasFromImage(sourceBitmap,workW,workH),image=input.getContext('2d',{willReadFrequently:true}).getImageData(0,0,workW,workH),maskImage=ensureMagicMask().getImageData(0,0,workW,workH),maskData=new Uint8Array(workW*workH);
   for(let i=0;i<maskData.length;i++)maskData[i]=maskImage.data[i*4+3]>12?255:0;
-  src=cv.matFromImageData(image);mask=new cv.Mat(workH,workW,cv.CV_8UC1);mask.data.set(maskData);dst=new cv.Mat();
+  srcRGBA=cv.matFromImageData(image);src=new cv.Mat();cv.cvtColor(srcRGBA,src,cv.COLOR_RGBA2RGB);mask=new cv.Mat(workH,workW,cv.CV_8UC1);mask.data.set(maskData);dst=new cv.Mat();
   const radius=clamp(Number(magicBrushSize.value)*workW/Math.max(1,cropFrame.clientWidth)*.13,3,18);setMagicStatus('در حال بازسازی با الگوریتم Telea…');cv.inpaint(src,mask,dst,radius,cv.INPAINT_TELEA);
   const small=document.createElement('canvas');small.width=workW;small.height=workH;cv.imshow(small,dst);
   const fullMask=document.createElement('canvas');fullMask.width=sourceW;fullMask.height=sourceH;fullMask.getContext('2d').drawImage(magicMaskCanvas,0,0,sourceW,sourceH);
@@ -317,7 +317,7 @@ async function applyMagicErase(){
   const result=canvasFromImage(sourceBitmap,sourceW,sourceH);result.getContext('2d').drawImage(patch,0,0);
   commitEditedSource(result,'ناحیهٔ انتخاب‌شده با قلم جادویی پاک‌سازی شد.');magicStrokes=[];magicMaskCanvas=null;setMagicActive(false);magicOverlay.hidden=true;setMagicStatus('پاک‌سازی با موفقیت اعمال شد.')
  }catch(e){console.error(e);setMagicStatus('پاک‌سازی انجام نشد: '+e.message,true);magicApply.disabled=!magicStrokes.length}
- finally{try{if(src)src.delete();if(mask)mask.delete();if(dst)dst.delete()}catch{}}
+ finally{try{if(srcRGBA)srcRGBA.delete();if(src)src.delete();if(mask)mask.delete();if(dst)dst.delete()}catch{}}
 }
 
 function resetGeometry(){if(!originalBitmap)return;generation++;queued=false;clearTimeout(timer);sourceBitmap=originalBitmap;rebuildWorkData();setGeometryMode('none');geometryStatus.textContent='همهٔ برش‌ها و چرخش‌ها بازنشانی شدند.';setStatus('ویرایش هندسی بازنشانی شد.','ok');if(modeClassic.checked)queueProcess(50)}
