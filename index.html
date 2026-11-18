@@ -68,7 +68,7 @@
     <button id="resetGeometry" class="btn ghost" type="button">بازنشانی ویرایش</button>
   </div>
   <div class="crop-stage"><div id="cropFrame" class="crop-frame"><canvas id="cropCanvas"></canvas><svg id="cropOverlay" hidden xmlns="http://www.w3.org/2000/svg" aria-label="قاب قابل تنظیم برش"></svg><canvas id="cropLens" class="crop-lens" width="132" height="132" hidden></canvas><canvas id="magicOverlay" hidden></canvas></div></div>
-  <div id="geometryHint" class="geom-hint">تصویر بدون تغییر است. برای اصلاح قاب، «برش آزاد» یا «پرسپکتیو ۴ نقطه‌ای» را انتخاب کنید. در حالت پرسپکتیو هر گوشه را جداگانه روی گوشهٔ ناحیهٔ موردنظر قرار دهید.</div>
+  <div id="geometryHint" class="geom-hint">تصویر بدون تغییر است. برای دوربری آزاد، بیضی یا پرسپکتیو ابزار دلخواه را انتخاب کنید؛ ذره‌بین هنگام کار به بزرگ‌نمایی محل اشاره کمک می‌کند.</div>
   <div id="geometryStatus" class="geom-status" aria-live="polite">آمادهٔ ویرایش هندسی</div>
 </div>
 
@@ -288,7 +288,7 @@ function replayMagicStroke(ctx,stroke){
  for(let i=0;i<region.length;i++)if(region[i]){const k=i*4;d[k]=d[k+1]=d[k+2]=255;d[k+3]=255}ctx.putImageData(im,0,0);drawMagicStroke(ctx,stroke)
 }
 function rebuildMagicMask(){const ctx=ensureMagicMask();ctx.clearRect(0,0,workW,workH);for(const stroke of magicStrokes)replayMagicStroke(ctx,stroke);renderMagicPreview()}
-function setMagicActive(active){magicActive=!!active;magicOverlay.hidden=!magicActive;magicOverlay.style.pointerEvents=magicActive?'auto':'none';magicToggle.classList.toggle('active',magicActive);magicToggle.textContent=magicActive?'پایان قلم جادویی':'فعال‌سازی قلم جادویی';if(magicActive){geometryMode='none';cropPoints=[];cropOverlay.setAttribute('hidden','');cropLens.hidden=true;ensureMagicMask();cropCanvas.style.cursor='crosshair'}else{cropCanvas.style.cursor='';drawCropEditor()}}
+function setMagicActive(active){magicActive=!!active;magicOverlay.hidden=!magicActive;magicOverlay.style.pointerEvents=magicActive?'auto':'none';magicToggle.classList.toggle('active',magicActive);magicToggle.textContent=magicActive?'پایان قلم جادویی':'فعال‌سازی قلم جادویی';if(magicActive){geometryMode='none';cropPoints=[];[cropModeNone,cropModeFree,cropModePerspective,cropModeLasso,cropModeEllipse].forEach(b=>b.classList.remove('active'));cropModeNone.classList.add('active');cropOverlay.setAttribute('hidden','');cropLens.hidden=true;ensureMagicMask();cropCanvas.style.cursor='crosshair'}else{cropCanvas.style.cursor='';drawCropEditor()}}
 function magicPoint(e){const r=magicOverlay.getBoundingClientRect();return{x:clamp((e.clientX-r.left)/Math.max(1,r.width)*workW,0,workW),y:clamp((e.clientY-r.top)/Math.max(1,r.height)*workH,0,workH)}}
 function addMagicPoint(stroke,p){const last=stroke.points[stroke.points.length-1];if(!last||Math.hypot(p.x-last.x,p.y-last.y)>1.5)stroke.points.push(p)}
 function loadOpenCV(){
@@ -299,7 +299,7 @@ function loadOpenCV(){
   const timer=setTimeout(()=>finish(new Error('بارگذاری OpenCV طول کشید یا اتصال اینترنت در دسترس نیست.')),45000);
   const script=document.createElement('script');script.src='https://docs.opencv.org/4.x/opencv.js';script.async=true;
   script.onerror=()=>finish(new Error('بارگذاری کتابخانهٔ پاک‌سازی ناموفق بود؛ اتصال اینترنت را بررسی کنید.'));
-  script.onload=()=>{const check=()=>{if(window.cv&&window.cv.Mat&&window.cv.inpaint)finish(null,window.cv);else if(!done)setTimeout(check,120)};check()};
+  script.onload=async()=>{try{let loaded=window.cv;if(loaded&&typeof loaded.then==='function')loaded=await loaded;if(loaded)window.cv=loaded;const check=()=>{if(window.cv&&window.cv.Mat&&window.cv.inpaint)finish(null,window.cv);else if(!done)setTimeout(check,120)};check()}catch(err){finish(err)}};
   document.head.appendChild(script)
  });return window.__royalOpenCVPromise
 }
