@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>ویرایشگر هوشمند تصویر — Turbo AI 2.4</title>
+<title>ویرایشگر هوشمند تصویر — Turbo AI 2.5</title>
 <style>
 :root{--bg:#0d1016;--panel:#151a22;--panel2:#1b212c;--line:#293140;--txt:#eef2f8;--muted:#9aa6b7;--accent:#4e8cff;--ai:#806eff;--ok:#2fbd8d;--bad:#ff6262;--r:14px}
 *{box-sizing:border-box}html,body{margin:0;padding:0}body{min-height:100vh;padding:22px 14px 60px;background:radial-gradient(1100px 520px at 50% -10%,#1a2437 0%,var(--bg) 63%);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased}.wrap{max-width:1120px;margin:auto}.head{text-align:center;margin-bottom:18px}.head h1{margin:0 0 6px;font-size:clamp(21px,4vw,30px);font-weight:850;background:linear-gradient(90deg,#9ebcff,#5b90ff,#5ad8ad);-webkit-background-clip:text;background-clip:text;color:transparent}.head p{margin:0;color:var(--muted);font-size:13px}.badge{display:inline-block;margin-top:9px;padding:5px 10px;border:1px solid #3a335d;border-radius:999px;background:#17152a;color:#c9c0ff;font-size:11px;font-weight:750}
@@ -35,13 +35,22 @@
 /* AI viewpoint generator v2.4 */
 .view-intro{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:9px}.view-intro b{font-size:14px}.view-intro span,.view-note{font-size:11.5px;color:var(--muted);line-height:1.9}
 .view-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin:10px 0}.view-field{display:flex;flex-direction:column;gap:5px}.view-field label{font-size:11.5px;color:var(--muted);font-weight:750}.view-field input[type=range],.view-field select,.view-field input[type=url],.view-field textarea{width:100%;accent-color:var(--ai)}.view-field select,.view-field input[type=url],.view-field textarea{padding:9px 10px;border-radius:9px;border:1px solid var(--line);background:var(--panel2);color:var(--txt);font:inherit;font-size:12.5px;outline:none}.view-field textarea{min-height:104px;resize:vertical;line-height:1.7}.view-field textarea.prompt{direction:ltr;text-align:left;min-height:178px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:11.5px}.view-angle{display:flex;align-items:center;gap:9px}.view-angle input{flex:1}.view-angle output{min-width:48px;text-align:center;color:#c9c0ff;background:#211d36;border:1px solid #433a70;padding:3px 7px;border-radius:7px;font-weight:800;font-variant-numeric:tabular-nums}.view-status{margin-top:9px;padding:9px 10px;border:1px solid #293140;border-radius:9px;background:#10151b;color:var(--muted);font-size:12px;min-height:38px}.view-status.ok{color:#82e1bb;border-color:#1e493a;background:#10201a}.view-status.error{color:#ffb4b4;border-color:#4a2222;background:#201313}.view-status.busy{color:#afd0ff;border-color:#203c60;background:#111b2b}.view-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.view-contract{margin-top:10px;padding:9px 11px;border:1px dashed #35415a;border-radius:9px;color:#9cabc0;background:#101722;font-size:11px;line-height:1.8}.view-contract code{color:#c7d8f4;direction:ltr;unicode-bidi:embed}.view-result-input{display:none}
+.crop-lens{position:absolute;z-index:8;width:132px;height:132px;border:3px solid #dce9ff;border-radius:50%;background:#101722;box-shadow:0 6px 24px #000b,0 0 0 2px #4e8cff;pointer-events:none}
+.crop-lens[hidden]{display:none}
+#magicOverlay{position:absolute;inset:0;width:100%;height:100%;z-index:7;touch-action:none;cursor:crosshair}
+#magicOverlay[hidden]{display:none}
+.magic-tools{display:flex;flex-wrap:wrap;align-items:end;gap:9px;margin-top:10px}
+.magic-tools .field{min-width:150px;flex:1}
+.magic-note{color:var(--muted);font-size:11.5px;line-height:1.85;margin-top:8px}
+.magic-status{min-height:24px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:#10151b;color:#a9c7ff;font-size:12px;margin-top:9px}
+@media(max-width:600px){.magic-tools .btn,.magic-tools .field{flex:1 1 calc(50% - 8px)}}
 @media(max-width:600px){.view-actions .btn{flex:1 1 calc(50% - 8px)}.view-field textarea.prompt{min-height:190px}}
 
 </style>
 </head>
 <body>
 <div class="wrap">
-<header class="head"><h1>سفیدکنندهٔ پس‌زمینهٔ تصویر</h1><p>ویرایش هندسی و حذف پس‌زمینه داخل مرورگر؛ ارسال برای تولید مولد فقط با اتصال سرویس انتخابی شما انجام می‌شود.</p><div class="badge">نسخه 2.4 Turbo • برش + پرسپکتیو + چرخش + تغییر زاویه با AI</div></header>
+<header class="head"><h1>سفیدکنندهٔ پس‌زمینهٔ تصویر</h1><p>ویرایش هندسی و حذف پس‌زمینه داخل مرورگر؛ ارسال برای تولید مولد فقط با اتصال سرویس انتخابی شما انجام می‌شود.</p><div class="badge">نسخه 2.5 Turbo • برش دوربری + ذره‌بین دقیق + قلم جادویی</div></header>
 <section id="drop" class="drop" role="button" tabindex="0" aria-label="انتخاب تصویر"><input id="file" type="file" accept="image/*" hidden><div class="ico">🖼️</div><div class="t">تصویر را انتخاب یا اینجا رها کنید</div><div class="s">کلیک کنید، Drag & Drop یا Ctrl+V</div></section>
 <section id="editor" class="hidden">
 
@@ -51,16 +60,32 @@
     <button id="cropModeNone" class="btn ghost active" type="button">نمایش کامل</button>
     <button id="cropModeFree" class="btn ghost" type="button">برش آزاد</button>
     <button id="cropModePerspective" class="btn ghost" type="button">پرسپکتیو ۴ نقطه‌ای</button>
+    <button id="cropModeLasso" class="btn ghost" type="button">✎ دوربری آزاد چندنقطه‌ای</button>
+    <button id="cropModeEllipse" class="btn ghost" type="button">◯ برش دایره‌ای/بیضی</button>
     <button id="rotateLeft" class="btn ghost" type="button">↶ چرخش ۹۰°</button>
     <button id="rotateRight" class="btn ghost" type="button">↷ چرخش ۹۰°</button>
     <button id="applyCrop" class="btn primary" type="button" disabled>اعمال برش</button>
     <button id="resetGeometry" class="btn ghost" type="button">بازنشانی ویرایش</button>
   </div>
-  <div class="crop-stage"><div id="cropFrame" class="crop-frame"><canvas id="cropCanvas"></canvas><svg id="cropOverlay" hidden xmlns="http://www.w3.org/2000/svg" aria-label="قاب قابل تنظیم برش"><polygon id="cropPolygon" class="crop-shade" points=""></polygon></svg></div></div>
+  <div class="crop-stage"><div id="cropFrame" class="crop-frame"><canvas id="cropCanvas"></canvas><svg id="cropOverlay" hidden xmlns="http://www.w3.org/2000/svg" aria-label="قاب قابل تنظیم برش"></svg><canvas id="cropLens" class="crop-lens" width="132" height="132" hidden></canvas><canvas id="magicOverlay" hidden></canvas></div></div>
   <div id="geometryHint" class="geom-hint">تصویر بدون تغییر است. برای اصلاح قاب، «برش آزاد» یا «پرسپکتیو ۴ نقطه‌ای» را انتخاب کنید. در حالت پرسپکتیو هر گوشه را جداگانه روی گوشهٔ ناحیهٔ موردنظر قرار دهید.</div>
   <div id="geometryStatus" class="geom-status" aria-live="polite">آمادهٔ ویرایش هندسی</div>
 </div>
 
+<div id="magicCard" class="card">
+ <div class="view-intro"><b>🪄 قلم جادویی؛ انتخاب و پاک‌سازی موضعی</b><span>روی متن، شیء یا شکل بکشید تا ناحیه انتخاب شود.</span></div>
+ <div class="magic-tools">
+  <button id="magicToggle" class="btn ai" type="button" disabled>فعال‌سازی قلم جادویی</button>
+  <div class="field"><label for="magicStrategy">روش انتخاب</label><select id="magicStrategy"><option value="brush">قلم دقیق — فقط ناحیه‌ای که می‌کشم</option><option value="color">هوشمند — ناحیهٔ هم‌رنگ</option><option value="text">متن/جزئیات — رنگ‌محور</option><option value="object">شیء/شکل — رنگ‌محور</option></select></div>
+  <div class="field"><label for="magicBrushSize">اندازه قلم <span class="val" id="magicBrushValue">۳۰</span></label><input id="magicBrushSize" type="range" min="8" max="90" value="30"></div>
+  <div class="field"><label for="magicTolerance">گسترش انتخاب <span class="val" id="magicToleranceValue">۳۵</span></label><input id="magicTolerance" type="range" min="8" max="90" value="35"></div>
+  <button id="magicUndo" class="btn ghost" type="button" disabled>↶ برگشت آخرین خط</button>
+  <button id="magicClear" class="btn ghost" type="button" disabled>پاک‌کردن انتخاب</button>
+  <button id="magicApply" class="btn ok" type="button" disabled>پاک‌سازی ناحیه انتخاب‌شده</button>
+ </div>
+ <div class="magic-note">قلم دقیق، مسیر شما را انتخاب می‌کند. حالت‌های هوشمند، ناحیهٔ پیوسته با رنگ مشابه را از روی تصویر گسترش می‌دهند. پاک‌سازی با الگوریتم Inpaint اجرا می‌شود و برای حذف واقعی به بارگذاری کتابخانهٔ OpenCV در اولین استفاده نیاز دارد؛ این نسخه OCR یا تشخیص معنایی خودکارِ متن/اشیا نیست.</div>
+ <div id="magicStatus" class="magic-status" role="status" aria-live="polite">ابتدا تصویر را بارگذاری و سپس قلم جادویی را فعال کنید.</div>
+</div>
 <div id="viewpointCard" class="card">
   <div class="view-intro"><b>🎥 تغییر زاویهٔ دید با هوش مصنوعی مولد</b><span>بازسازی نمای جدید؛ فراتر از چرخش یا پرسپکتیو هندسی</span></div>
   <div class="view-grid">
@@ -121,10 +146,11 @@ const formatSel=$('#format'),quality=$('#quality'),qualityV=$('#qualityV'),quali
 const processBtn=$('#process'),downloadBtn=$('#download'),resetBtn=$('#reset'),status=$('#status'),stats=$('#stats');
 const progress=$('#progress'),bar=$('#bar'),testReport=$('#testReport');
 const cropCanvas=$('#cropCanvas'),cropCtx=cropCanvas.getContext('2d');
-const cropOverlay=$('#cropOverlay'),cropPolygon=$('#cropPolygon'),geometryHint=$('#geometryHint'),geometryStatus=$('#geometryStatus');
-const cropModeNone=$('#cropModeNone'),cropModeFree=$('#cropModeFree'),cropModePerspective=$('#cropModePerspective'),applyCropBtn=$('#applyCrop'),resetGeometryBtn=$('#resetGeometry');
+const cropOverlay=$('#cropOverlay'),cropLens=$('#cropLens'),cropLensCtx=cropLens.getContext('2d'),magicOverlay=$('#magicOverlay'),magicOverlayCtx=magicOverlay.getContext('2d'),geometryHint=$('#geometryHint'),geometryStatus=$('#geometryStatus');
+const cropModeNone=$('#cropModeNone'),cropModeFree=$('#cropModeFree'),cropModePerspective=$('#cropModePerspective'),cropModeLasso=$('#cropModeLasso'),cropModeEllipse=$('#cropModeEllipse'),applyCropBtn=$('#applyCrop'),resetGeometryBtn=$('#resetGeometry');
+const magicToggle=$('#magicToggle'),magicStrategy=$('#magicStrategy'),magicBrushSize=$('#magicBrushSize'),magicBrushValue=$('#magicBrushValue'),magicTolerance=$('#magicTolerance'),magicToleranceValue=$('#magicToleranceValue'),magicUndo=$('#magicUndo'),magicClear=$('#magicClear'),magicApply=$('#magicApply'),magicStatus=$('#magicStatus');
 const viewAngle=$('#viewAngle'),viewAngleValue=$('#viewAngleValue'),viewDirection=$('#viewDirection'),viewExtra=$('#viewExtra'),viewPrompt=$('#viewPrompt'),viewEndpoint=$('#viewEndpoint'),viewBuildPrompt=$('#viewBuildPrompt'),viewCopyPrompt=$('#viewCopyPrompt'),viewExportInput=$('#viewExportInput'),viewSendAI=$('#viewSendAI'),viewImportResult=$('#viewImportResult'),viewResultFile=$('#viewResultFile'),viewStatus=$('#viewStatus');
-let originalBitmap=null,geometryMode='none',cropPoints=[],cropDrag=null;
+let originalBitmap=null,geometryMode='none',cropPoints=[],cropDrag=null,magicActive=false,magicMaskCanvas=null,magicStrokes=[];
 const PROCESS_MAX=1600, AI_MAX=1280;
 let sourceFile=null, sourceBitmap=null, sourceW=0,sourceH=0, workData=null, workW=0,workH=0, currentMask=null,maskW=0,maskH=0, hasResult=false,busy=false,generation=0,queued=false,timer=0,aiPromise=null;
 const AI_VERSION='1.7.0';
@@ -162,9 +188,40 @@ function canvasFromImage(bmp,w,h){const c=document.createElement('canvas');c.wid
 
 function imageDimensions(img){return{w:img.width||img.naturalWidth||0,h:img.height||img.naturalHeight||0}}
 function initialCropPoints(mode){const m=Math.max(2,Math.round(Math.min(sourceW,sourceH)*.06));return[{x:m,y:m},{x:sourceW-m,y:m},{x:sourceW-m,y:sourceH-m},{x:m,y:sourceH-m}]}
-function cropRectFromPoints(points){return{left:Math.min(points[0].x,points[1].x,points[2].x,points[3].x),top:Math.min(points[0].y,points[1].y,points[2].y,points[3].y),right:Math.max(points[0].x,points[1].x,points[2].x,points[3].x),bottom:Math.max(points[0].y,points[1].y,points[2].y,points[3].y)}}
-function drawCropEditor(){if(!sourceBitmap)return;cropCanvas.width=sourceW;cropCanvas.height=sourceH;cropCtx.clearRect(0,0,sourceW,sourceH);cropCtx.drawImage(sourceBitmap,0,0,sourceW,sourceH);cropOverlay.setAttribute('viewBox',`0 0 ${sourceW} ${sourceH}`);cropOverlay.setAttribute('preserveAspectRatio','none');cropOverlay.innerHTML='';if(geometryMode==='none'){cropOverlay.setAttribute('hidden','');applyCropBtn.disabled=true;return}cropOverlay.removeAttribute('hidden');applyCropBtn.disabled=false;const ns='http://www.w3.org/2000/svg';const shade=document.createElementNS(ns,'path');shade.setAttribute('d',`M0 0H${sourceW}V${sourceH}H0Z M${cropPoints.map(p=>`${p.x} ${p.y}`).join('L')}Z`);shade.setAttribute('fill','rgba(8,12,20,.48)');shade.setAttribute('fill-rule','evenodd');shade.setAttribute('pointer-events','none');cropOverlay.appendChild(shade);const poly=document.createElementNS(ns,'polygon');poly.setAttribute('class','crop-shade');poly.setAttribute('points',cropPoints.map(p=>`${p.x},${p.y}`).join(' '));poly.setAttribute('fill','rgba(0,0,0,0)');poly.setAttribute('pointer-events','all');poly.dataset.handle='move';cropOverlay.appendChild(poly);const radius=Math.max(7,Math.min(22,Math.min(sourceW,sourceH)*.018));const addHandle=(name,x,y,edge=false)=>{const c=document.createElementNS(ns,'circle');c.setAttribute('cx',x);c.setAttribute('cy',y);c.setAttribute('r',edge?radius*.72:radius);c.setAttribute('class','crop-handle'+(edge?' edge':''));c.dataset.handle=name;cropOverlay.appendChild(c)};const p=cropPoints;if(geometryMode==='free'){addHandle('top',(p[0].x+p[1].x)/2,p[0].y,true);addHandle('right',p[1].x,(p[1].y+p[2].y)/2,true);addHandle('bottom',(p[2].x+p[3].x)/2,p[2].y,true);addHandle('left',p[0].x,(p[0].y+p[3].y)/2,true)}['TL','TR','BR','BL'].forEach((k,i)=>addHandle(k,p[i].x,p[i].y,false))}
-function setGeometryMode(mode){geometryMode=mode;cropPoints=mode==='none'?[]:initialCropPoints(mode);[cropModeNone,cropModeFree,cropModePerspective].forEach(b=>b.classList.remove('active'));(mode==='none'?cropModeNone:mode==='free'?cropModeFree:cropModePerspective).classList.add('active');geometryHint.textContent=mode==='free'?'قاب آزاد: گوشه‌ها یا دستگیره‌های وسط ضلع را بکشید تا مستطیل با نسبت دلخواه ساخته شود. برای جابه‌جایی کل قاب، داخل آن را بکشید.':mode==='perspective'?'پرسپکتیو: چهار گوشه را مستقل جابه‌جا کنید؛ ترتیب نقاط از بالا-چپ و در جهت ساعت‌گرد است. خروجی به یک مستطیل صاف تبدیل می‌شود.':'تصویر کامل نمایش داده می‌شود و هیچ برشی اعمال نشده است.';geometryStatus.textContent=mode==='none'?'آمادهٔ ویرایش هندسی':mode==='free'?'قاب برش آزاد را تنظیم کنید.':'چهار گوشهٔ پرسپکتیو را تنظیم کنید.';drawCropEditor()}
+function cropRectFromPoints(points){return{left:Math.min(...points.map(p=>p.x)),top:Math.min(...points.map(p=>p.y)),right:Math.max(...points.map(p=>p.x)),bottom:Math.max(...points.map(p=>p.y))}}
+function polygonArea(points){let a=0;for(let i=0;i<points.length;i++){const p=points[i],q=points[(i+1)%points.length];a+=p.x*q.y-q.x*p.y}return Math.abs(a/2)}
+function validFreeform(points){return Array.isArray(points)&&points.length>=3&&points.every(p=>Number.isFinite(p.x)&&Number.isFinite(p.y))&&polygonArea(points)>=30}
+function ellipsePoints(rect,n=64){const r=cropRectFromPoints(rect),cx=(r.left+r.right)/2,cy=(r.top+r.bottom)/2,rx=(r.right-r.left)/2,ry=(r.bottom-r.top)/2,out=[];for(let i=0;i<n;i++){const a=i*Math.PI*2/n;out.push({x:cx+Math.cos(a)*rx,y:cy+Math.sin(a)*ry})}return out}
+function maskCropCanvas(source,points,shape='polygon'){
+ const r=cropRectFromPoints(points),left=Math.max(0,Math.floor(r.left)),top=Math.max(0,Math.floor(r.top)),right=Math.min(sourceW,Math.ceil(r.right)),bottom=Math.min(sourceH,Math.ceil(r.bottom)),w=right-left,h=bottom-top;
+ if(w<8||h<8)throw new Error('ناحیهٔ انتخابی خیلی کوچک است.');
+ const out=document.createElement('canvas');out.width=w;out.height=h;const x=out.getContext('2d');x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';x.drawImage(source,left,top,w,h,0,0,w,h);
+ const mask=document.createElement('canvas');mask.width=w;mask.height=h;const m=mask.getContext('2d');m.fillStyle='#fff';m.beginPath();
+ if(shape==='ellipse'){m.ellipse(w/2,h/2,w/2,h/2,0,0,Math.PI*2)}
+ else{points.forEach((p,i)=>{const px=p.x-left,py=p.y-top;if(i===0)m.moveTo(px,py);else m.lineTo(px,py)});m.closePath()}
+ m.fill();x.globalCompositeOperation='destination-in';x.drawImage(mask,0,0);return out
+}
+function drawCropEditor(){
+ if(!sourceBitmap)return;cropCanvas.width=sourceW;cropCanvas.height=sourceH;cropCtx.clearRect(0,0,sourceW,sourceH);cropCtx.drawImage(sourceBitmap,0,0,sourceW,sourceH);
+ cropOverlay.setAttribute('viewBox','0 0 '+sourceW+' '+sourceH);cropOverlay.setAttribute('preserveAspectRatio','none');cropOverlay.innerHTML='';
+ if(geometryMode==='none'||magicActive){cropOverlay.setAttribute('hidden','');applyCropBtn.disabled=true;return}
+ cropOverlay.removeAttribute('hidden');const ns='http://www.w3.org/2000/svg',p=cropPoints;
+ if(geometryMode==='lasso'&&p.length<3){if(p.length){const line=document.createElementNS(ns,'polyline');line.setAttribute('points',p.map(q=>q.x+','+q.y).join(' '));line.setAttribute('fill','none');line.setAttribute('stroke','#8ab4ff');line.setAttribute('stroke-width','3');line.setAttribute('vector-effect','non-scaling-stroke');cropOverlay.appendChild(line)}applyCropBtn.disabled=true;return}
+ const shapePoints=geometryMode==='ellipse'?ellipsePoints(p):p;
+ const d='M0 0H'+sourceW+'V'+sourceH+'H0Z M'+shapePoints.map(q=>q.x+' '+q.y).join('L')+'Z';
+ const shade=document.createElementNS(ns,'path');shade.setAttribute('d',d);shade.setAttribute('fill','rgba(8,12,20,.48)');shade.setAttribute('fill-rule','evenodd');shade.setAttribute('pointer-events','none');cropOverlay.appendChild(shade);
+ const poly=document.createElementNS(ns,'polygon');poly.setAttribute('class','crop-shade');poly.setAttribute('points',shapePoints.map(q=>q.x+','+q.y).join(' '));poly.setAttribute('fill','rgba(0,0,0,0)');poly.setAttribute('pointer-events','all');poly.dataset.handle='move';cropOverlay.appendChild(poly);
+ const radius=Math.max(7,Math.min(22,Math.min(sourceW,sourceH)*.018)),addHandle=(name,x,y,edge=false)=>{const c=document.createElementNS(ns,'circle');c.setAttribute('cx',x);c.setAttribute('cy',y);c.setAttribute('r',edge?radius*.72:radius);c.setAttribute('class','crop-handle'+(edge?' edge':''));c.dataset.handle=name;cropOverlay.appendChild(c)};
+ if(geometryMode==='free'||geometryMode==='ellipse'){addHandle('top',(p[0].x+p[1].x)/2,p[0].y,true);addHandle('right',p[1].x,(p[1].y+p[2].y)/2,true);addHandle('bottom',(p[2].x+p[3].x)/2,p[2].y,true);addHandle('left',p[0].x,(p[0].y+p[3].y)/2,true)}
+ if(geometryMode!=='lasso')['TL','TR','BR','BL'].forEach((k,i)=>addHandle(k,p[i].x,p[i].y,false));applyCropBtn.disabled=false
+}
+function setGeometryMode(mode){
+ if(magicActive)setMagicActive(false);geometryMode=mode;cropPoints=(mode==='none'||mode==='lasso')?[]:initialCropPoints(mode);
+ [cropModeNone,cropModeFree,cropModePerspective,cropModeLasso,cropModeEllipse].forEach(b=>b.classList.remove('active'));
+ ({none:cropModeNone,free:cropModeFree,perspective:cropModePerspective,lasso:cropModeLasso,ellipse:cropModeEllipse}[mode]||cropModeNone).classList.add('active');
+ const hints={none:'تصویر بدون تغییر است.',free:'قاب مستطیلی را با گوشه‌ها و دستگیره‌های میانی تنظیم کنید.',perspective:'چهار گوشه را مستقل روی سطح موردنظر قرار دهید؛ خروجی به مستطیل صاف تبدیل می‌شود.',lasso:'با نگه‌داشتن و کشیدن انگشت/ماوس دور سوژه را آزادانه رسم کنید؛ ذره‌بین دایره‌ای محل دقیق اشاره را بزرگ‌نمایی می‌کند.',ellipse:'قاب را تنظیم کنید؛ ناحیهٔ داخل بیضی/دایره حفظ و بیرون آن شفاف می‌شود.'};
+ geometryHint.textContent=hints[mode]||hints.none;geometryStatus.textContent=mode==='none'?'آمادهٔ ویرایش هندسی':mode==='lasso'?'دور سوژه بکشید تا مسیر چندنقطه‌ای ساخته شود.':'قاب برش را تنظیم کنید.';drawCropEditor()
+}
 function validateQuad(points){if(!Array.isArray(points)||points.length!==4)return false;for(const p of points)if(!Number.isFinite(p.x)||!Number.isFinite(p.y))return false;let sign=0,area=0;for(let i=0;i<4;i++){const a=points[i],b=points[(i+1)%4],c=points[(i+2)%4];const cross=(b.x-a.x)*(c.y-b.y)-(b.y-a.y)*(c.x-b.x);if(Math.abs(cross)<1e-5)return false;if(!sign)sign=Math.sign(cross);else if(Math.sign(cross)!==sign)return false;area+=a.x*b.y-b.x*a.y;const dx=b.x-a.x,dy=b.y-a.y;if(Math.hypot(dx,dy)<3)return false}return Math.abs(area/2)>=30}
 function solveLinearSystem(A,b){const n=b.length,M=A.map((r,i)=>r.slice().concat([b[i]]));for(let col=0;col<n;col++){let pivot=col;for(let r=col+1;r<n;r++)if(Math.abs(M[r][col])>Math.abs(M[pivot][col]))pivot=r;if(Math.abs(M[pivot][col])<1e-10)throw new Error('قاب پرسپکتیو بیش از حد تخت یا نامعتبر است.');[M[col],M[pivot]]=[M[pivot],M[col]];const div=M[col][col];for(let j=col;j<=n;j++)M[col][j]/=div;for(let r=0;r<n;r++){if(r===col)continue;const f=M[r][col];if(!f)continue;for(let j=col;j<=n;j++)M[r][j]-=f*M[col][j]}}return M.map(r=>r[n])}
 function solvePerspectiveMap(points,outW,outH){const dst=[{x:0,y:0},{x:outW,y:0},{x:outW,y:outH},{x:0,y:outH}],A=[],b=[];for(let i=0;i<4;i++){const x=dst[i].x,y=dst[i].y,u=points[i].x,v=points[i].y;A.push([x,y,1,0,0,0,-u*x,-u*y]);b.push(u);A.push([0,0,0,x,y,1,-v*x,-v*y]);b.push(v)}return solveLinearSystem(A,b)}
@@ -200,7 +257,20 @@ async function perspectiveWarpCanvas(source,points,onProgress=()=>{}){
 }
 function rebuildWorkData(){if(!sourceBitmap)return;const d=imageDimensions(sourceBitmap);sourceW=d.w;sourceH=d.h;if(!sourceW||!sourceH)throw new Error('ابعاد تصویر ویرایش‌شده نامعتبر است.');const fit=calcFit(sourceW,sourceH,PROCESS_MAX);workW=fit.w;workH=fit.h;const wc=canvasFromImage(sourceBitmap,workW,workH);workData=wc.getContext('2d',{willReadFrequently:true}).getImageData(0,0,workW,workH);srcCanvas.width=workW;srcCanvas.height=workH;srcCtx.clearRect(0,0,workW,workH);srcCtx.putImageData(workData,0,0);outCanvas.width=0;outCanvas.height=0;currentMask=null;maskW=maskH=0;hasResult=false;downloadBtn.disabled=true;stats.textContent=`تصویر ویرایش‌شده: ${sourceW}×${sourceH} پیکسل · پردازش سریع: ${workW}×${workH}`;drawCropEditor();setViewAvailability()}
 function commitEditedSource(canvas,message){generation++;queued=false;clearTimeout(timer);const previous=sourceBitmap;sourceBitmap=canvas;if(previous&&previous!==originalBitmap&&typeof previous.close==='function'){try{previous.close()}catch{}}rebuildWorkData();geometryMode='none';cropPoints=[];setGeometryMode('none');geometryStatus.textContent=message;setStatus(message,'ok');if(modeClassic.checked)queueProcess(50)}
-async function applyGeometryCrop(){if(geometryMode==='none'||!sourceBitmap)return;const pts=cropPoints.map(p=>({x:p.x,y:p.y}));if(!validateQuad(pts)){geometryStatus.textContent='قاب معتبر نیست؛ چهارضلعی را اصلاح کنید.';setStatus(geometryStatus.textContent,'error');return}applyCropBtn.disabled=true;try{let result;if(geometryMode==='free'){const r=cropRectFromPoints(pts);if(r.right-r.left<8||r.bottom-r.top<8)throw new Error('ابعاد برش خیلی کوچک است.');result=cropCanvasRect(sourceBitmap,r)}else{setStatus('در حال اصلاح پرسپکتیو…','busy');result=await perspectiveWarpCanvas(sourceBitmap,pts,p=>{geometryStatus.textContent=`اصلاح پرسپکتیو… ${p}%`})}commitEditedSource(result,geometryMode==='free'?'برش آزاد اعمال شد.':'اصلاح پرسپکتیو چهار نقطه‌ای اعمال شد.')}catch(e){console.error(e);geometryStatus.textContent=e.message;setStatus('اعمال برش ناموفق بود: '+e.message,'error')}finally{applyCropBtn.disabled=geometryMode==='none'}}
+async function applyGeometryCrop(){
+ if(geometryMode==='none'||!sourceBitmap)return;const pts=cropPoints.map(p=>({x:p.x,y:p.y}));
+ if(geometryMode==='perspective'&&!validateQuad(pts)){geometryStatus.textContent='قاب پرسپکتیو معتبر نیست؛ چهارضلعی را اصلاح کنید.';setStatus(geometryStatus.textContent,'error');return}
+ if(geometryMode==='lasso'&&!validFreeform(pts)){geometryStatus.textContent='مسیر دوربری کامل نیست؛ دور سوژه یک مسیر بسته رسم کنید.';setStatus(geometryStatus.textContent,'error');return}
+ applyCropBtn.disabled=true;
+ try{let result,message;
+  if(geometryMode==='free'){const r=cropRectFromPoints(pts);if(r.right-r.left<8||r.bottom-r.top<8)throw new Error('ابعاد برش خیلی کوچک است.');result=cropCanvasRect(sourceBitmap,r);message='برش مستطیلی اعمال شد.'}
+  else if(geometryMode==='ellipse'){result=maskCropCanvas(sourceBitmap,pts,'ellipse');message='برش دایره‌ای/بیضی با پس‌زمینه شفاف اعمال شد.'}
+  else if(geometryMode==='lasso'){result=maskCropCanvas(sourceBitmap,pts,'polygon');message='برش دوربری آزاد چندنقطه‌ای اعمال شد.'}
+  else{setStatus('در حال اصلاح پرسپکتیو…','busy');result=await perspectiveWarpCanvas(sourceBitmap,pts,p=>{geometryStatus.textContent='اصلاح پرسپکتیو… '+p+'%' });message='اصلاح پرسپکتیو چهارگوشه‌ای اعمال شد.'}
+  commitEditedSource(result,message)
+ }catch(e){console.error(e);geometryStatus.textContent=e.message;setStatus('اعمال برش ناموفق بود: '+e.message,'error')}
+ finally{applyCropBtn.disabled=geometryMode==='none'}
+}
 function rotateCurrent(degrees){if(!sourceBitmap)return;try{const c=rotateCanvas(sourceBitmap,degrees);commitEditedSource(c,`چرخش ${degrees<0?'پادساعت‌گرد':'ساعت‌گرد'} ۹۰ درجه اعمال شد.`)}catch(e){setStatus('چرخش ناموفق بود: '+e.message,'error')}}
 function resetGeometry(){if(!originalBitmap)return;generation++;queued=false;clearTimeout(timer);sourceBitmap=originalBitmap;rebuildWorkData();setGeometryMode('none');geometryStatus.textContent='همهٔ برش‌ها و چرخش‌ها بازنشانی شدند.';setStatus('ویرایش هندسی بازنشانی شد.','ok');if(modeClassic.checked)queueProcess(50)}
 
