@@ -272,6 +272,54 @@ async function applyGeometryCrop(){
  finally{applyCropBtn.disabled=geometryMode==='none'}
 }
 function rotateCurrent(degrees){if(!sourceBitmap)return;try{const c=rotateCanvas(sourceBitmap,degrees);commitEditedSource(c,`چرخش ${degrees<0?'پادساعت‌گرد':'ساعت‌گرد'} ۹۰ درجه اعمال شد.`)}catch(e){setStatus('چرخش ناموفق بود: '+e.message,'error')}}
+
+function ensureMagicMask(){if(!magicMaskCanvas||magicMaskCanvas.width!==workW||magicMaskCanvas.height!==workH){magicMaskCanvas=document.createElement('canvas');magicMaskCanvas.width=workW;magicMaskCanvas.height=workH;magicStrokes=[]}return magicMaskCanvas.getContext('2d',{willReadFrequently:true})}
+function setMagicStatus(message,error=false){magicStatus.textContent=message;magicStatus.style.color=error?'#ffb4b4':'#a9c7ff';magicStatus.style.borderColor=error?'#633':'var(--line)'}
+function renderMagicPreview(){if(!sourceBitmap||!magicMaskCanvas)return;magicOverlay.width=sourceW;magicOverlay.height=sourceH;magicOverlayCtx.clearRect(0,0,sourceW,sourceH);magicOverlayCtx.drawImage(magicMaskCanvas,0,0,sourceW,sourceH);magicOverlayCtx.globalCompositeOperation='source-in';magicOverlayCtx.fillStyle='rgba(77,145,255,.48)';magicOverlayCtx.fillRect(0,0,sourceW,sourceH);magicOverlayCtx.globalCompositeOperation='source-over';magicUndo.disabled=!magicStrokes.length;magicClear.disabled=!magicStrokes.length;magicApply.disabled=!magicStrokes.length}
+function drawMagicStroke(ctx,stroke){const p=stroke.points;if(!p.length)return;ctx.save();ctx.strokeStyle='#fff';ctx.fillStyle='#fff';ctx.lineWidth=stroke.width;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(p[0].x,p[0].y);for(let i=1;i<p.length;i++)ctx.lineTo(p[i].x,p[i].y);ctx.stroke();ctx.beginPath();ctx.arc(p[0].x,p[0].y,stroke.width/2,0,Math.PI*2);ctx.fill();ctx.restore()}
+function magicColorRegion(imageData,w,h,sx,sy,tolerance,maxFraction=.35){
+ const n=w*h,out=new Uint8Array(n),data=imageData.data,x0=clamp(Math.round(sx),0,w-1),y0=clamp(Math.round(sy),0,h-1),seed=(y0*w+x0)*4,sr=data[seed],sg=data[seed+1],sb=data[seed+2],limit=Math.max(1,tolerance)*Math.sqrt(3),seen=new Uint8Array(n),queue=new Int32Array(n);let head=0,tail=0,cap=Math.max(100,Math.floor(n*maxFraction));queue[tail++]=y0*w+x0;seen[y0*w+x0]=1;
+ while(head<tail&&tail<cap){const idx=queue[head++],p=idx*4,dr=data[p]-sr,dg=data[p+1]-sg,db=data[p+2]-sb;if(Math.sqrt(dr*dr+dg*dg+db*db)>limit)continue;out[idx]=255;const x=idx%w,y=(idx-x)/w;const add=q=>{if(q>=0&&q<n&&!seen[q]){seen[q]=1;queue[tail++]=q}};if(x)add(idx-1);if(x<w-1)add(idx+1);if(y)add(idx-w);if(y<h-1)add(idx+w)}
+ return out
+}
+function replayMagicStroke(ctx,stroke){
+ if(stroke.strategy==='brush'){drawMagicStroke(ctx,stroke);return}
+ const p=stroke.points[Math.floor(stroke.points.length/2)],base=stroke.tolerance,scale=stroke.strategy==='text'?.72:stroke.strategy==='object'?1.35:1,region=magicColorRegion(workData,workW,workH,p.x,p.y,clamp(base*scale,8,105)),im=ctx.getImageData(0,0,workW,workH),d=im.data;
+ for(let i=0;i<region.length;i++)if(region[i]){const k=i*4;d[k]=d[k+1]=d[k+2]=255;d[k+3]=255}ctx.putImageData(im,0,0);drawMagicStroke(ctx,stroke)
+}
+function rebuildMagicMask(){const ctx=ensureMagicMask();ctx.clearRect(0,0,workW,workH);for(const stroke of magicStrokes)replayMagicStroke(ctx,stroke);renderMagicPreview()}
+function setMagicActive(active){magicActive=!!active;magicOverlay.hidden=!magicActive;magicOverlay.style.pointerEvents=magicActive?'auto':'none';magicToggle.classList.toggle('active',magicActive);magicToggle.textContent=magicActive?'پایان قلم جادویی':'فعال‌سازی قلم جادویی';if(magicActive){geometryMode='none';cropPoints=[];cropOverlay.setAttribute('hidden','');cropLens.hidden=true;ensureMagicMask();cropCanvas.style.cursor='crosshair'}else{cropCanvas.style.cursor='';drawCropEditor()}}
+function magicPoint(e){const r=magicOverlay.getBoundingClientRect();return{x:clamp((e.clientX-r.left)/Math.max(1,r.width)*workW,0,workW),y:clamp((e.clientY-r.top)/Math.max(1,r.height)*workH,0,workH)}}
+function addMagicPoint(stroke,p){const last=stroke.points[stroke.points.length-1];if(!last||Math.hypot(p.x-last.x,p.y-last.y)>1.5)stroke.points.push(p)}
+function loadOpenCV(){
+ if(window.cv&&window.cv.Mat&&window.cv.inpaint)return Promise.resolve(window.cv);
+ if(window.__royalOpenCVPromise)return window.__royalOpenCVPromise;
+ window.__royalOpenCVPromise=new Promise((resolve,reject)=>{
+  let done=false;const finish=(err,cv)=>{if(done)return;done=true;clearTimeout(timer);err?reject(err):resolve(cv)};
+  const timer=setTimeout(()=>finish(new Error('بارگذاری OpenCV طول کشید یا اتصال اینترنت در دسترس نیست.')),45000);
+  const script=document.createElement('script');script.src='https://docs.opencv.org/4.x/opencv.js';script.async=true;
+  script.onerror=()=>finish(new Error('بارگذاری کتابخانهٔ پاک‌سازی ناموفق بود؛ اتصال اینترنت را بررسی کنید.'));
+  script.onload=()=>{const check=()=>{if(window.cv&&window.cv.Mat&&window.cv.inpaint)finish(null,window.cv);else if(!done)setTimeout(check,120)};check()};
+  document.head.appendChild(script)
+ });return window.__royalOpenCVPromise
+}
+async function applyMagicErase(){
+ if(!sourceBitmap||!magicMaskCanvas||!magicStrokes.length){setMagicStatus('ابتدا با قلم ناحیه‌ای را انتخاب کنید.',true);return}
+ magicApply.disabled=true;setMagicStatus('در حال بارگذاری موتور پاک‌سازی و آماده‌سازی تصویر…');let src=null,mask=null,dst=null;
+ try{
+  const cv=await loadOpenCV(),input=canvasFromImage(sourceBitmap,workW,workH),image=input.getContext('2d',{willReadFrequently:true}).getImageData(0,0,workW,workH),maskImage=ensureMagicMask().getImageData(0,0,workW,workH),maskData=new Uint8Array(workW*workH);
+  for(let i=0;i<maskData.length;i++)maskData[i]=maskImage.data[i*4+3]>12?255:0;
+  src=cv.matFromImageData(image);mask=new cv.Mat(workH,workW,cv.CV_8UC1);mask.data.set(maskData);dst=new cv.Mat();
+  const radius=clamp(Number(magicBrushSize.value)*workW/Math.max(1,cropFrame.clientWidth)*.13,3,18);setMagicStatus('در حال بازسازی با الگوریتم Telea…');cv.inpaint(src,mask,dst,radius,cv.INPAINT_TELEA);
+  const small=document.createElement('canvas');small.width=workW;small.height=workH;cv.imshow(small,dst);
+  const fullMask=document.createElement('canvas');fullMask.width=sourceW;fullMask.height=sourceH;fullMask.getContext('2d').drawImage(magicMaskCanvas,0,0,sourceW,sourceH);
+  const patch=document.createElement('canvas');patch.width=sourceW;patch.height=sourceH;const pc=patch.getContext('2d');pc.drawImage(small,0,0,sourceW,sourceH);pc.globalCompositeOperation='destination-in';pc.drawImage(fullMask,0,0);pc.globalCompositeOperation='source-over';
+  const result=canvasFromImage(sourceBitmap,sourceW,sourceH);result.getContext('2d').drawImage(patch,0,0);
+  commitEditedSource(result,'ناحیهٔ انتخاب‌شده با قلم جادویی پاک‌سازی شد.');magicStrokes=[];magicMaskCanvas=null;setMagicActive(false);magicOverlay.hidden=true;setMagicStatus('پاک‌سازی با موفقیت اعمال شد.')
+ }catch(e){console.error(e);setMagicStatus('پاک‌سازی انجام نشد: '+e.message,true);magicApply.disabled=!magicStrokes.length}
+ finally{try{if(src)src.delete();if(mask)mask.delete();if(dst)dst.delete()}catch{}}
+}
+
 function resetGeometry(){if(!originalBitmap)return;generation++;queued=false;clearTimeout(timer);sourceBitmap=originalBitmap;rebuildWorkData();setGeometryMode('none');geometryStatus.textContent='همهٔ برش‌ها و چرخش‌ها بازنشانی شدند.';setStatus('ویرایش هندسی بازنشانی شد.','ok');if(modeClassic.checked)queueProcess(50)}
 
 async function loadFile(file){if(!file||!file.type.startsWith('image/')){setStatus('یک فایل تصویری معتبر انتخاب کنید.','error');return}generation++;queued=false;clearTimeout(timer);safeCloseBitmap();sourceFile=file;setStatus('در حال خواندن تصویر…','busy');editor.classList.remove('hidden');try{originalBitmap=await decode(file);sourceBitmap=originalBitmap;rebuildWorkData();setGeometryMode('none');geometryStatus.textContent='تصویر بارگذاری شد؛ در صورت نیاز برش یا چرخش را انجام دهید.';if(modeAi.checked){setStatus('تصویر آماده است — در صورت نیاز برش/چرخش را انجام دهید و سپس پردازش AI را اجرا کنید.','ok')}else{setStatus('تصویر آماده است؛ پردازش کلاسیک پس از چند لحظه انجام می‌شود.','busy');queueProcess(20)}}catch(e){console.error(e);setStatus('خطا در بارگذاری: '+e.message,'error')}}
