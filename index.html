@@ -250,10 +250,11 @@ function applyExifOrientation(source,orientation){
  ctx.setTransform(...transforms[o]);ctx.drawImage(source,0,0);return out
 }
 async function decodeTiff(file){
- await loadScriptOnce('https://cdn.jsdelivr.net/npm/pako@1.0.11/dist/pako.min.js','pako','pako');
  const UTIF=await loadScriptOnce('https://cdn.jsdelivr.net/npm/utif@3.1.0/UTIF.min.js','UTIF','tiff');
  const buffer=await file.arrayBuffer(),ifds=UTIF.decode(buffer);
  if(!ifds||!ifds.length)throw new Error('در فایل TIFF تصویر قابل استخراج پیدا نشد.');
+ const needsInflate=ifds.some(ifd=>[8,32946].includes(tiffTagNumber(ifd.t259)));
+ if(needsInflate)await loadScriptOnce('https://cdn.jsdelivr.net/npm/pako@1.0.11/dist/pako.min.js','pako','pako');
  const candidates=ifds.map(ifd=>({ifd,w:tiffTagNumber(ifd.width||ifd.t256),h:tiffTagNumber(ifd.height||ifd.t257)}))
   .filter(x=>x.w>0&&x.h>0&&x.w*x.h<=60000000)
   .sort((a,b)=>(b.w*b.h)-(a.w*a.h));
