@@ -1,11 +1,11 @@
-# Tizandish Image Studio — v2.8.1.1
+# Tizandish Image Studio — v2.8.1.2
 
 ویرایشگر و مبدل تصویر فارسی و واکنش‌گرا؛ پردازش محلی در مرورگر.
 
-## امکانات نسخه 2.8.1.1
+## امکانات نسخه 2.8.1.2
 - ورود تصویر با انتخاب فایل، Drag & Drop و Clipboard
 - رمزگشایی بومی JPEG/JPG، PNG، WebP، GIF، BMP، SVG و AVIF (بسته به مرورگر)
-- تشخیص امضای باینری فایل (Magic Bytes) برای PNG، JPEG، GIF، BMP، TIFF، WebP، AVIF، HEIC و SVG؛ تشخیص تا حد زیادی مستقل از MIME و پسوند است
+- تشخیص امضای باینری فایل (Magic Bytes) برای PNG، JPEG، GIF، BMP، TIFF، WebP، AVIF، HEIC و SVG؛ بررسی برند اصلی و برندهای سازگار AVIF/HEIC در فایل‌های ISO-BMFF
 - تشخیص فرمت از امضای باینری فایل (Magic Bytes)، حتی اگر MIME یا پسوند فایل اشتباه/ناقص باشد؛ پسوند و ساختار با هم اعتبارسنجی می‌شوند
 - پشتیبانی HEIC/HEIF با مبدل جدید heic-to 1.6.7 در صورت نبود رمزگشایی بومی
 - خواندن TIFF با UTIF.js و Pako برای فشرده‌سازی Deflate/Inflate؛ بررسی IFDهای موجود، انتخاب بزرگ‌ترین تصویر قابل‌خواندن و اصلاح جهت EXIF/TIFF
