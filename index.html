@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>ویرایشگر هوشمند تصویر — Turbo AI 2.6</title>
+<title>ویرایشگر هوشمند تصویر — Turbo AI 2.8.1</title>
 <style>
 :root{--bg:#0d1016;--panel:#151a22;--panel2:#1b212c;--line:#293140;--txt:#eef2f8;--muted:#9aa6b7;--accent:#4e8cff;--ai:#806eff;--ok:#2fbd8d;--bad:#ff6262;--r:14px}
 *{box-sizing:border-box}html,body{margin:0;padding:0}body{min-height:100vh;padding:22px 14px 60px;background:radial-gradient(1100px 520px at 50% -10%,#1a2437 0%,var(--bg) 63%);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased}.wrap{max-width:1120px;margin:auto}.head{text-align:center;margin-bottom:18px}.head h1{margin:0 0 6px;font-size:clamp(21px,4vw,30px);font-weight:850;background:linear-gradient(90deg,#9ebcff,#5b90ff,#5ad8ad);-webkit-background-clip:text;background-clip:text;color:transparent}.head p{margin:0;color:var(--muted);font-size:13px}.badge{display:inline-block;margin-top:9px;padding:5px 10px;border:1px solid #3a335d;border-radius:999px;background:#17152a;color:#c9c0ff;font-size:11px;font-weight:750}
@@ -155,7 +155,7 @@ const cropModeNone=$('#cropModeNone'),cropModeFree=$('#cropModeFree'),cropModePe
 const magicToggle=$('#magicToggle'),magicStrategy=$('#magicStrategy'),magicBrushSize=$('#magicBrushSize'),magicBrushValue=$('#magicBrushValue'),magicTolerance=$('#magicTolerance'),magicToleranceValue=$('#magicToleranceValue'),magicUndo=$('#magicUndo'),magicClear=$('#magicClear'),magicApply=$('#magicApply'),magicStatus=$('#magicStatus');
 const viewAngle=$('#viewAngle'),viewAngleValue=$('#viewAngleValue'),viewDirection=$('#viewDirection'),viewExtra=$('#viewExtra'),viewPrompt=$('#viewPrompt'),viewEndpoint=$('#viewEndpoint'),viewBuildPrompt=$('#viewBuildPrompt'),viewCopyPrompt=$('#viewCopyPrompt'),viewExportInput=$('#viewExportInput'),viewSendAI=$('#viewSendAI'),viewImportResult=$('#viewImportResult'),viewResultFile=$('#viewResultFile'),viewStatus=$('#viewStatus');
 let originalBitmap=null,geometryMode='none',cropPoints=[],cropDrag=null,magicActive=false,magicMaskCanvas=null,magicStrokes=[];
-let cameraStream=null,cameraFacing='environment',cameraRequestId=0,heicDecoderPromise=null,tiffDecoderPromise=null;
+let cameraStream=null,cameraFacing='environment',cameraRequestId=0,heicDecoderPromise=null,tiffDecoderPromise=null,pakoDecoderPromise=null;
 const PROCESS_MAX=1600, AI_MAX=1280;
 let sourceFile=null, sourceBitmap=null, sourceW=0,sourceH=0, workData=null, workW=0,workH=0, currentMask=null,maskW=0,maskH=0, hasResult=false,busy=false,generation=0,queued=false,timer=0,aiPromise=null;
 const AI_VERSION='1.7.0';
@@ -190,11 +190,32 @@ function safeCloseBitmap(){if(originalBitmap&&originalBitmap.close){try{original
 const SUPPORTED_EXTENSIONS=new Set(['jpg','jpeg','png','webp','gif','bmp','svg','avif','heic','heif','tif','tiff']);
 const RAW_EXTENSIONS=new Set(['dng','cr2','cr3','nef','arw','rw2','orf','raf']);
 function fileExtension(file){const n=String(file&&file.name||'').toLowerCase();return n.includes('.')?n.split('.').pop():''}
-function isSupportedImageFile(file){if(!file)return false;const ext=fileExtension(file);return !!(String(file.type||'').toLowerCase().startsWith('image/')||SUPPORTED_EXTENSIONS.has(ext))}
+function isSupportedImageFile(file){if(!file)return false;const ext=fileExtension(file),type=String(file.type||'').toLowerCase();return !!(type.startsWith('image/')||SUPPORTED_EXTENSIONS.has(ext)||type==='application/octet-stream'||type==='')}
+async function sniffImageKind(file){
+ const b=new Uint8Array(await file.slice(0,64).arrayBuffer());
+ const ascii=(a,z)=>String.fromCharCode(...b.slice(a,z));
+ if(b[0]===0xff&&b[1]===0xd8&&b[2]===0xff)return 'jpeg';
+ if(b[0]===0x89&&ascii(1,4)==='PNG')return 'png';
+ if(['GIF87a','GIF89a'].includes(ascii(0,6)))return 'gif';
+ if(ascii(0,2)==='BM')return 'bmp';
+ if(ascii(0,4)==='II*\0'||ascii(0,4)==='MM\0*')return 'tiff';
+ if(ascii(0,4)==='RIFF'&&ascii(8,12)==='WEBP')return 'webp';
+ if(ascii(4,8)==='ftyp'){
+  const brand=ascii(8,12);
+  if(['avif','avis'].includes(brand))return 'avif';
+  if(['heic','heix','hevc','hevx','mif1','msf1','heif'].includes(brand))return 'heic';
+ }
+ try{
+  const head=await file.slice(0,512).text();
+  if(/^\uFEFF?\s*(?:<\?xml[^>]*>\s*)?<svg[\s>]/i.test(head)||/^\uFEFF?\s*<svg[\s>]/i.test(head))return 'svg';
+ }catch{}
+ return 'unknown';
+}
 function loadScriptOnce(src,globalName,cacheName){
  if(window[globalName])return Promise.resolve(window[globalName]);
  if(cacheName==='heic'&&heicDecoderPromise)return heicDecoderPromise;
  if(cacheName==='tiff'&&tiffDecoderPromise)return tiffDecoderPromise;
+ if(cacheName==='pako'&&pakoDecoderPromise)return pakoDecoderPromise;
  const promise=new Promise((resolve,reject)=>{
   const existing=Array.from(document.scripts).find(x=>x.src===src);
   const script=existing||document.createElement('script');
@@ -205,7 +226,8 @@ function loadScriptOnce(src,globalName,cacheName){
  });
  if(cacheName==='heic')heicDecoderPromise=promise.catch(e=>{heicDecoderPromise=null;throw e});
  if(cacheName==='tiff')tiffDecoderPromise=promise.catch(e=>{tiffDecoderPromise=null;throw e});
- return cacheName==='heic'?heicDecoderPromise:tiffDecoderPromise;
+ if(cacheName==='pako')pakoDecoderPromise=promise.catch(e=>{pakoDecoderPromise=null;throw e});
+ return cacheName==='heic'?heicDecoderPromise:cacheName==='tiff'?tiffDecoderPromise:pakoDecoderPromise;
 }
 function tiffTagNumber(value){
  if(Array.isArray(value)||ArrayBuffer.isView(value))return Number(value[0])||0;
@@ -228,6 +250,7 @@ function applyExifOrientation(source,orientation){
  ctx.setTransform(...transforms[o]);ctx.drawImage(source,0,0);return out
 }
 async function decodeTiff(file){
+ await loadScriptOnce('https://cdn.jsdelivr.net/npm/pako@1.0.11/dist/pako.min.js','pako','pako');
  const UTIF=await loadScriptOnce('https://cdn.jsdelivr.net/npm/utif@3.1.0/UTIF.min.js','UTIF','tiff');
  const buffer=await file.arrayBuffer(),ifds=UTIF.decode(buffer);
  if(!ifds||!ifds.length)throw new Error('در فایل TIFF تصویر قابل استخراج پیدا نشد.');
@@ -264,16 +287,16 @@ async function decodeNative(file){
   img.src=url;
  });
 }
-async function decode(file){
- const ext=fileExtension(file),type=String(file.type||'').toLowerCase();
+async function decode(file,detectedKind){
+ const ext=fileExtension(file),type=String(file.type||'').toLowerCase(),kind=detectedKind||await sniffImageKind(file);
  if(RAW_EXTENSIONS.has(ext))throw new Error('فایل‌های RAW دوربین (مثل CR2/NEF/ARW) در این نسخه به‌صورت کامل توسعه‌داده نمی‌شوند؛ لطفاً پیش‌نمایش JPEG یا خروجی TIFF/JPEG دوربین را انتخاب کنید.');
- if(ext==='tif'||ext==='tiff'||type==='image/tiff'){
+ if(kind==='tiff'||ext==='tif'||ext==='tiff'||type==='image/tiff'){
   try{return await decodeTiff(file)}catch(tiffError){
    try{return await decodeNative(file)}catch(nativeError){throw new Error('خواندن TIFF ناموفق بود: '+(tiffError.message||nativeError.message))}
   }
  }
  try{return await decodeNative(file)}catch(nativeError){
-  if(['heic','heif'].includes(ext)||type.includes('heic')||type.includes('heif')){
+  if(kind==='heic'||['heic','heif'].includes(ext)||type.includes('heic')||type.includes('heif')){
    try{
     const HeicTo=await loadScriptOnce('https://cdn.jsdelivr.net/npm/heic-to@1.6.7/dist/iife/heic-to.js','HeicTo','heic');
     if(typeof HeicTo!=='function')throw new Error('مبدل HEIC در دسترس نیست.');
@@ -495,12 +518,14 @@ async function applyMagicErase(){
 function resetGeometry(){if(!originalBitmap)return;generation++;queued=false;clearTimeout(timer);sourceBitmap=originalBitmap;rebuildWorkData();setGeometryMode('none');geometryStatus.textContent='همهٔ برش‌ها و چرخش‌ها بازنشانی شدند.';setStatus('ویرایش هندسی بازنشانی شد.','ok');if(modeClassic.checked)queueProcess(50)}
 
 async function loadFile(file){
- if(!file||!isSupportedImageFile(file)){setStatus('فرمت قابل شناسایی نیست. فرمت‌های رایج: JPG، PNG، WEBP، GIF، BMP، SVG، AVIF، HEIC/HEIF و TIFF.','error');return}
+ if(!file){setStatus('ابتدا یک تصویر انتخاب کنید.','error');return}
  if(file.size>120*1024*1024){setStatus('حجم فایل بیش از ۱۲۰ مگابایت است؛ ابتدا اندازهٔ عکس را کاهش دهید.','error');return}
  const request=++generation;queued=false;clearTimeout(timer);setStatus('در حال خواندن و تشخیص فرمت تصویر…','busy');
  let decoded=null;
  try{
-  decoded=await decode(file);
+  const detectedKind=await sniffImageKind(file);
+  if(detectedKind==='unknown'||!isSupportedImageFile(file))throw new Error('ساختار فایل تصویری قابل شناسایی نیست؛ یک فایل سالم JPG، PNG، WebP، GIF، BMP، SVG، AVIF، HEIC/HEIF یا TIFF را انتخاب کنید.');
+  decoded=await decode(file,detectedKind);
   if(request!==generation){if(decoded&&typeof decoded.close==='function')decoded.close();return}
   const normalized=normalizeSourceBitmap(decoded);decoded=null;
   if(request!==generation){if(normalized.bitmap&&typeof normalized.bitmap.close==='function')normalized.bitmap.close();return}
@@ -547,7 +572,7 @@ async function convertImage(){
   if(fmt==='jpeg'){ctx.fillStyle='#fff';ctx.fillRect(0,0,dims.w,dims.h)}
   ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(sourceBitmap,0,0,dims.w,dims.h);
   setStatus('در حال تبدیل فرمت عکس، بدون حذف پس‌زمینه…','busy');
-  const blob=await canvasToBlob(c,mime,q);if(!blob||!blob.size)throw new Error('مرورگر فایل خروجی نساخت.');
+  let blob=await canvasToBlob(c,mime,q);if((!blob||!blob.size)&&fmt!=='png')blob=await canvasToBlob(c,'image/png',1);if(!blob||!blob.size)throw new Error('مرورگر فایل خروجی نساخت.');
   const ext=actualFormat(blob),fallback=String(blob.type||'').toLowerCase()!==mime;
   finishBlob(blob,ext,fallback?'مرورگر این فرمت را نمی‌سازد؛ فایل با فرمت واقعی '+ext.toUpperCase()+' ذخیره شد.':'','converted');
  }catch(e){console.error(e);setStatus('تبدیل فرمت ناموفق بود: '+e.message,'error')}
@@ -586,7 +611,7 @@ async function runSelfTests(){testReport.style.display='block';const rows=[];con
  if(actual!==f)rows.push('SKIP رمزگذاری دقیق '+f+' — این مرورگر '+actual+' تحویل داد؛ پسوند واقعی حفظ می‌شود.');
  else ok('MIME صحیح '+f,actual===f);
  if(decoded.close)decoded.close()
-}ok('شناسایی پسوندهای رایج',isSupportedImageFile({name:'sample.HEIC',type:''})&&isSupportedImageFile({name:'sample.TIFF',type:'application/octet-stream'})&&isSupportedImageFile({name:'sample.jpg',type:'application/octet-stream'}));ok('تشخیص فرمت غیرتصویری',!isSupportedImageFile({name:'document.pdf',type:'application/pdf'}));
+}ok('شناسایی پسوندهای رایج',isSupportedImageFile({name:'sample.HEIC',type:''})&&isSupportedImageFile({name:'sample.TIFF',type:'application/octet-stream'})&&isSupportedImageFile({name:'sample.jpg',type:'application/octet-stream'}));ok('تشخیص فرمت غیرتصویری',!isSupportedImageFile({name:'document.pdf',type:'application/pdf'}));const pngProbe=await canvasToBlob(c,'image/png',1),jpgProbe=await canvasToBlob(c,'image/jpeg',.9);ok('تشخیص امضای واقعی PNG',await sniffImageKind(pngProbe)==='png');ok('تشخیص امضای واقعی JPEG',await sniffImageKind(jpgProbe)==='jpeg');
 const orientSource=document.createElement('canvas');orientSource.width=3;orientSource.height=2;
 const orient6=applyExifOrientation(orientSource,6),orient8=applyExifOrientation(orientSource,8);
 ok('جهت EXIF شماره ۶',orient6.width===2&&orient6.height===3);
@@ -603,7 +628,7 @@ const testCrop=cropCanvasRect(c,{left:20,top:15,right:120,bottom:95});ok('برش
 const skewPts=[{x:35,y:20},{x:285,y:42},{x:300,y:205},{x:18,y:190}];const testWarp=await perspectiveWarpCanvas(c,skewPts,()=>{});ok('تبدیل پرسپکتیو واقعیِ چهارگوشه‌ای',testWarp.width>0&&testWarp.height>0&&testWarp.width<=5000&&testWarp.height<=5000&&validateQuad(skewPts));const savedSW=sourceW,savedSH=sourceH;sourceW=320;sourceH=240;const polyCut=maskCropCanvas(c,[{x:20,y:20},{x:140,y:25},{x:120,y:90},{x:85,y:130},{x:30,y:100}],'polygon'),polyData=polyCut.getContext('2d').getImageData(0,0,polyCut.width,polyCut.height).data;ok('برش دوربری چندنقطه‌ای و شفافیت',polyCut.width===120&&polyCut.height===110&&polyData[(119*4)+3]===0);const ellipseCut=maskCropCanvas(c,[{x:30,y:20},{x:150,y:20},{x:150,y:100},{x:30,y:100}],'ellipse'),ellipseData=ellipseCut.getContext('2d').getImageData(0,0,ellipseCut.width,ellipseCut.height).data;ok('برش بیضی با لبهٔ شفاف',ellipseData[3]===0&&ellipseData[(40*ellipseCut.width+60)*4+3]>0);sourceW=savedSW;sourceH=savedSH;const fake=new Uint8ClampedArray(8*8*4);for(let yy=0;yy<8;yy++)for(let xx=0;xx<8;xx++){const k=(yy*8+xx)*4;fake[k]=xx<4?20:220;fake[k+1]=fake[k+2]=20;fake[k+3]=255}const region=magicColorRegion({data:fake},8,8,1,1,5,1);ok('انتخاب هوشمند ناحیهٔ هم‌رنگ',region[0]===255&&region[7]===0&&region[63]===0);
 const promptRight=buildViewPrompt(30,'right','Keep the same person.');ok('پرامپت زاویهٔ ۳۰ درجه به راست',promptRight.includes('30 degrees to the right')&&promptRight.includes('NOT a flat in-plane rotation'));ok('حفظ هویت، نور و نسبت تصویر در پرامپت',promptRight.includes('exact identity')&&promptRight.includes('lighting direction')&&promptRight.includes('original aspect ratio'));ok('پرامپت چپ و تغییر ارتفاع',buildViewPrompt(45,'left').includes('45 degrees to the left')&&buildViewPrompt(20,'higher').includes('raising the camera viewpoint'));
 const tinyPng='iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/9ioAAAAASUVORK5CYII=';const tinyBlob=base64ToBlob(tinyPng,'image/png');ok('تبدیل Base64 به PNG',tinyBlob.type==='image/png'&&tinyBlob.size>20);let endpointOk=false;try{endpointOk=validateViewEndpoint('https://example.com/api/viewpoint').startsWith('https://')}catch{}ok('اعتبارسنجی HTTPS برای API',endpointOk);let insecureRejected=false;try{validateViewEndpoint('http://example.com/api')}catch{insecureRejected=true}ok('رد API ناامن HTTP',insecureRejected);let invalidB64Rejected=false;try{base64ToBlob('%%%','image/png')}catch{invalidB64Rejected=true}ok('رد Base64 نامعتبر',invalidB64Rejected);
-testReport.textContent='Self-test v2.8\n'+rows.join('\n')+'\n\nتولید زندهٔ مدل مولد فقط با API واسط و کلید معتبر قابل آزمایش است؛ آزمون ارتباط ساختگی در تست‌ها به‌عنوان تولید واقعی گزارش نمی‌شود.'}catch(e){ok('اجرای تست‌ها',false,e.message);testReport.textContent='Self-test error\n'+rows.join('\n')}}
+testReport.textContent='Self-test v2.8.1\n'+rows.join('\n')+'\n\nتولید زندهٔ مدل مولد فقط با API واسط و کلید معتبر قابل آزمایش است؛ آزمون ارتباط ساختگی در تست‌ها به‌عنوان تولید واقعی گزارش نمی‌شود.'}catch(e){ok('اجرای تست‌ها',false,e.message);testReport.textContent='Self-test error\n'+rows.join('\n')}}
 // UI events
 cameraOpenButton.addEventListener('click',startCamera);cameraFallbackOpen.addEventListener('click',()=>cameraFileInput.click());cameraFlip.addEventListener('click',()=>{cameraFacing=cameraFacing==='environment'?'user':'environment';startCamera()});cameraCapture.addEventListener('click',captureCameraPhoto);cameraClose.addEventListener('click',()=>{stopCamera();cameraPanel.classList.add('hidden')});cameraFileInput.addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];if(f)loadFile(f);e.target.value=''});
 drop.addEventListener('click',()=>fileInput.click());drop.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();fileInput.click()}});fileInput.addEventListener('change',e=>{const f=e.target.files?.[0];if(f)loadFile(f);e.target.value=''});['dragenter','dragover'].forEach(v=>drop.addEventListener(v,e=>{e.preventDefault();drop.classList.add('drag')}));['dragleave','drop'].forEach(v=>drop.addEventListener(v,e=>{e.preventDefault();drop.classList.remove('drag')}));drop.addEventListener('drop',e=>{const f=e.dataTransfer?.files?.[0];if(f)loadFile(f)});window.addEventListener('dragover',e=>e.preventDefault());window.addEventListener('drop',e=>e.preventDefault());document.addEventListener('paste',e=>{for(const it of (e.clipboardData?.items||[])){if(it.type.startsWith('image/')){const f=it.getAsFile();if(f&&isSupportedImageFile(f)){e.preventDefault();loadFile(f)}break}}});
