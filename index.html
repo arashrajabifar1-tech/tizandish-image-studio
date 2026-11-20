@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>استودیو حذف پس‌زمینه تصویر — Tizandish 2.8.1.8</title>
+<title>تیزاندیش استودیو تصویر — Tizandish 2.9.0</title>
 <style>
 :root{--bg:#0d1016;--panel:#151a22;--panel2:#1b212c;--line:#293140;--txt:#eef2f8;--muted:#9aa6b7;--accent:#4e8cff;--ai:#806eff;--ok:#2fbd8d;--bad:#ff6262;--r:14px}
 *{box-sizing:border-box}html,body{margin:0;padding:0}body{min-height:100vh;padding:22px 14px 60px;background:radial-gradient(1100px 520px at 50% -10%,#1a2437 0%,var(--bg) 63%);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased}.wrap{max-width:1120px;margin:auto}.head{text-align:center;margin-bottom:18px}.head h1{margin:0 0 6px;font-size:clamp(21px,4vw,30px);font-weight:850;background:linear-gradient(90deg,#9ebcff,#5b90ff,#5ad8ad);-webkit-background-clip:text;background-clip:text;color:transparent}.head p{margin:0;color:var(--muted);font-size:13px}.badge{display:inline-block;margin-top:9px;padding:5px 10px;border:1px solid #3a335d;border-radius:999px;background:#17152a;color:#c9c0ff;font-size:11px;font-weight:750}
@@ -48,11 +48,53 @@
 
 .source-actions{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;margin:12px 0}.source-actions .btn{min-width:190px}.camera-panel{margin:12px 0;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}.camera-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}.camera-head span{color:var(--muted);font-size:12px}.camera-panel video{display:block;width:100%;max-height:62vh;object-fit:contain;background:#05070a;border-radius:10px}.camera-panel .actions{justify-content:center}.camera-panel .actions .btn{flex:1 1 150px}@media(max-width:600px){.source-actions .btn{flex:1 1 100%}.camera-panel{padding:10px}}
  .prompt-assist{margin:0 0 12px;padding:12px;background:#171525;border-color:#39345b}.prompt-title{font-weight:850;color:#c9c0ff}.prompt-assist p{margin:4px 0 9px;color:var(--muted);font-size:12px}.prompt-assist textarea{width:100%;resize:vertical;min-height:62px;border:1px solid var(--line);border-radius:9px;background:var(--panel2);color:var(--txt);padding:10px;font:inherit;font-size:13px;outline:none}.prompt-assist .status{margin-top:8px}
+
+/* Tizandish Studio 2.9 visual refresh */
+:root{--bg:#090d17;--panel:#111827;--panel2:#192235;--line:#28354b;--txt:#f3f6ff;--muted:#a5b2c8;--accent:#668cff;--ai:#9a78ff;--ok:#45d6a2;--bad:#ff727e;--warm:#ffbd69;--r:18px}
+body{padding:20px 14px 64px;background:radial-gradient(950px 520px at 8% -12%,rgba(91,118,255,.22),transparent 58%),radial-gradient(700px 430px at 96% 5%,rgba(38,207,174,.12),transparent 58%),linear-gradient(180deg,#0a0e19,#080b12 75%);color:var(--txt)}
+.wrap{max-width:1180px}
+.head{position:relative;margin:0 auto 18px;padding:22px 16px 18px;border:1px solid rgba(113,139,197,.22);border-radius:24px;background:linear-gradient(135deg,rgba(27,37,61,.86),rgba(15,21,34,.78));box-shadow:0 14px 44px rgba(0,0,0,.22);overflow:hidden}
+.head:after{content:"";position:absolute;inset:auto -12% -68% -12%;height:150px;background:radial-gradient(ellipse,rgba(89,134,255,.18),transparent 70%);pointer-events:none}
+.brand-mark{width:42px;height:42px;margin:0 auto 8px;display:grid;place-items:center;border-radius:14px;background:linear-gradient(135deg,#658aff,#9876ff 58%,#42d7b0);color:white;font-size:22px;box-shadow:0 6px 24px rgba(102,140,255,.28)}
+.head h1{font-size:clamp(23px,4.7vw,34px);background:linear-gradient(90deg,#d7e5ff,#a9b9ff,#9af2d8);margin-bottom:7px}
+.head p{font-size:13.5px;max-width:720px;margin:auto}
+.badge{border-color:rgba(154,120,255,.34);background:rgba(99,74,169,.18);color:#d7caff;font-size:11.5px}
+.feature-strip{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-top:14px}
+.feature-strip span{display:inline-flex;align-items:center;gap:5px;padding:6px 10px;border-radius:999px;border:1px solid rgba(120,153,207,.18);background:rgba(9,14,24,.38);color:#c4d2e9;font-size:11.5px}
+.drop{border:2px dashed rgba(111,148,225,.45);border-radius:22px;background:linear-gradient(145deg,rgba(20,30,49,.92),rgba(14,19,30,.92));padding:42px 18px;box-shadow:0 10px 32px rgba(0,0,0,.14)}
+.drop:hover,.drop.drag{border-color:#78a0ff;background:linear-gradient(145deg,#1b2b48,#111c2d);box-shadow:0 0 0 4px rgba(102,140,255,.08)}
+.drop .ico{font-size:46px;filter:drop-shadow(0 6px 12px rgba(108,143,255,.25))}
+.drop .t{font-size:18px;color:#f5f7ff}.drop .s{font-size:13px}
+.card,.camera-panel{border-color:rgba(124,151,196,.2);border-radius:18px;background:linear-gradient(150deg,rgba(20,28,43,.96),rgba(14,19,29,.96));box-shadow:0 8px 24px rgba(0,0,0,.14)}
+.btn{border-radius:12px;transition:transform .14s ease,filter .14s ease,box-shadow .14s ease}
+.btn:not(:disabled):hover{transform:translateY(-1px);filter:brightness(1.08)}
+.btn.primary{background:linear-gradient(135deg,#668dff,#4f73e8);box-shadow:0 6px 16px rgba(79,115,232,.2)}
+.btn.ai{background:linear-gradient(135deg,#a080ff,#7862e8);box-shadow:0 6px 16px rgba(128,110,255,.17)}
+.btn.ok{background:linear-gradient(135deg,#55ddb0,#27b88d)}
+.btn.ghost{background:rgba(17,25,39,.6);border-color:#34435b;color:#c5d1e4}
+.field input[type=number],.field select,.view-field select,.view-field input[type=url],.view-field textarea,.prompt-assist textarea{border-color:#34435a;background:#151f31}
+.field input[type=range],.switch input{accent-color:#8b7aff}
+.mode{border-radius:14px;background:rgba(15,22,34,.78)}
+.mode.active{background:linear-gradient(140deg,rgba(38,58,94,.65),rgba(18,27,42,.88));border-color:#6b92ff}
+.mode.ai.active{background:linear-gradient(140deg,rgba(59,42,92,.62),rgba(20,25,40,.9));border-color:#a28aff}
+.chip{background:#141d2c;border-color:#34435a;color:#c4d1e5}
+.status,.magic-status,.view-status{border-color:#30415a;background:#111b2b}
+.box{border-radius:14px;border-color:#34435a;background-color:#141a27;background-image:linear-gradient(45deg,#252e40 25%,transparent 25%,transparent 75%,#252e40 75%),linear-gradient(45deg,#252e40 25%,#141a27 25%,#141a27 75%,#252e40 75%)}
+.crop-stage{border-radius:15px;background:#0b111c;border-color:#35445e}
+.geom-tools .btn.active{background:linear-gradient(135deg,rgba(56,89,150,.45),rgba(28,42,65,.7));border-color:#77a0ff}
+.view-angle output{color:#d5ccff;background:#29233e;border-color:#4c4276}
+.view-contract{background:#121b2a;border-color:#35435b}
+.prompt-assist{background:linear-gradient(140deg,#201d35,#151b2a);border-color:#4a416f}
+.test-report{background:#101827;border-color:#35435b;color:#c4d2e7}
+.source-actions .btn{min-width:170px}
+@media(max-width:720px){body{padding:12px 10px 48px}.head{padding:18px 12px 14px;border-radius:20px}.feature-strip{gap:6px}.feature-strip span{font-size:10.5px;padding:5px 8px}.drop{padding:32px 12px}.previews{gap:9px}}
+@media(prefers-reduced-motion:reduce){.btn{transition:none}.btn:not(:disabled):hover{transform:none}}
+
 </style>
 </head>
 <body>
 <div class="wrap">
-<header class="head"><h1>استودیو حذف پس‌زمینهٔ تصویر</h1><p>ویرایش هندسی و حذف پس‌زمینه داخل مرورگر؛ ارسال برای تولید مولد فقط با اتصال سرویس انتخابی شما انجام می‌شود.</p><div class="badge">نسخه 2.8.1.8 • AI با تغییر اندازهٔ کامل + پشتیبان GPU/CPU + خروجی شفاف</div></header>
+<header class="head"><div class="brand-mark" aria-hidden="true">✦</div><h1>تیزاندیش | استودیو تصویر</h1><p>از برش هوشمند تا خلق تصویر؛ ابزارهای حرفه‌ای، ساده و در دسترس</p><div class="badge">نسخه 2.9.0 • بازطراحی تجربه کاربری</div><div class="feature-strip" aria-label="ویژگی‌های استودیو"><span>✂️ برش و دوربری</span><span>🪄 پاک‌سازی هوشمند</span><span>🎨 طراحی و خروجی</span><span>📱 سازگار با موبایل</span></div></header>
 <section id="drop" class="drop" role="button" tabindex="0" aria-label="انتخاب تصویر"><input id="file" type="file" accept="image/*,.heic,.heif,.tif,.tiff,.avif,.bmp,.svg" hidden><div class="ico">🖼️</div><div class="t">تصویر را انتخاب یا اینجا رها کنید</div><div class="s">کلیک کنید، Drag & Drop یا Ctrl+V</div></section>
 <div class="source-actions" aria-label="روش‌های ورود تصویر"><button id="cameraOpen" class="btn ai" type="button">📷 باز کردن دوربین</button><button id="cameraFallbackOpen" class="btn ghost" type="button">📸 دوربین گوشی / انتخاب عکس</button><input id="cameraFile" type="file" accept="image/*" capture="environment" hidden></div>
 <section id="cameraPanel" class="camera-panel hidden" aria-label="دوربین"><div class="camera-head"><b>📷 ثبت تصویر</b><span id="cameraStatus" role="status" aria-live="polite">برای شروع، اجازهٔ دسترسی دوربین را بدهید.</span></div><video id="cameraVideo" autoplay playsinline muted></video><div class="actions"><button id="cameraCapture" class="btn ok" type="button" disabled>ثبت عکس</button><button id="cameraFlip" class="btn ghost" type="button">تعویض دوربین جلو / عقب</button><button id="cameraClose" class="btn ghost" type="button">بستن دوربین</button></div></section>
@@ -102,7 +144,7 @@
  <div class="actions"><button id="chromeExtract" class="btn ai" type="button" disabled>✨ استخراج کروم + هالهٔ جدا</button></div>
  <div id="chromeMatteStatus" class="magic-status" role="status" aria-live="polite">تصویر را بارگذاری کنید. این ابزار برای زمینهٔ سفید و نور آبی طراحی شده؛ روی عکس‌های دیگر ممکن است خروجی نامناسب باشد.</div>
 </div>
-<div id="viewpointCard class="card">
+<div id="viewpointCard" class="card">
   <div class="view-intro"><b>🎥 تغییر زاویهٔ دید با هوش مصنوعی مولد</b><span>بازسازی نمای جدید؛ فراتر از چرخش یا پرسپکتیو هندسی</span></div>
   <div class="view-grid">
     <div class="view-field"><label for="viewAngle">میزان تغییر زاویهٔ دوربین</label><div class="view-angle"><input id="viewAngle" type="range" min="5" max="75" step="5" value="30"><output id="viewAngleValue">۳۰°</output></div></div>
