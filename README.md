@@ -1,4 +1,4 @@
-# Tizandish Image Studio — v3.3.0
+# Tizandish Image Studio — v3.3.1
 
 ویرایشگر و مبدل تصویر فارسی و واکنش‌گرا؛ پردازش تصویر در مرورگر.
 
@@ -59,6 +59,10 @@ npx playwright install chromium
 npx playwright test
 ```
 GitHub Actions نیز همین آزمون‌ها را بعد از هر push به شاخهٔ `main` اجرا می‌کند. آزمون موتور مدل AI به‌صورت مستقیم، به دانلود مدل و توان سخت‌افزاری دستگاه وابسته است؛ تست خودکار، مسیر آماده‌سازی ورودی، fallback GPU/CPU و خروجی‌های تصویری را جداگانه می‌سنجد.
+
+## کارت حمایت و انتشار
+- کارت حمایت مالی در پایین صفحه اضافه شده و تصویر کارت با پس‌زمینه شفاف و بهینه برای وب است.
+- GitHub Pages اکنون پوشه `assets` را هم همراه `index.html` منتشر می‌کند.
 
 ## انتشار در Vercel
 مخزن `arashrajabifar1-tech/tizandish-image-studio` را در Vercel Import کنید. Framework Preset را روی Other بگذارید و Build Command و Output Directory را خالی نگه دارید. پس از اتصال Git، push روی شاخه `main` انتشار خودکار را فعال می‌کند.
