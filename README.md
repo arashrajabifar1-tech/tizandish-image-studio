@@ -1,4 +1,4 @@
-# Tizandish Image Studio — v3.3.1
+# Tizandish Image Studio — v3.3.2
 
 ویرایشگر و مبدل تصویر فارسی و واکنش‌گرا؛ پردازش تصویر در مرورگر.
 
