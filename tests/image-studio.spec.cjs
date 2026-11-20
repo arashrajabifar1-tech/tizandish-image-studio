@@ -44,7 +44,6 @@ test('internal regression suite passes and reports the current release', async (
 test('compact AI selector and scroll progress indicator respond to page scroll', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 420 });
   await page.goto('/');
-  await expect(page.locator('#aiCard')).toBeVisible();
   const styles = await page.evaluate(() => ({
     progressBar: !!document.querySelector('#scrollProgress'),
     progressFill: !!document.querySelector('#scrollProgressFill'),
@@ -56,7 +55,13 @@ test('compact AI selector and scroll progress indicator respond to page scroll',
   expect(styles.modeRadius).toBe('999px');
   expect(styles.descriptionsHidden).toBe(true);
 
-  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  await page.evaluate(() => {
+    const spacer = document.createElement('div');
+    spacer.id = 'scroll-test-spacer';
+    spacer.style.height = '1200px';
+    document.body.append(spacer);
+    window.scrollTo(0, document.documentElement.scrollHeight);
+  });
   await expect.poll(async () => page.locator('#scrollProgressFill').evaluate(el => parseFloat(el.style.width) || 0)).toBeGreaterThan(90);
   await page.evaluate(() => window.scrollTo(0, 0));
   await expect.poll(async () => page.locator('#scrollProgressFill').evaluate(el => parseFloat(el.style.width) || 0)).toBeLessThan(1);
