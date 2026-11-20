@@ -762,23 +762,69 @@ if(new URLSearchParams(location.search).get('selftest')==='1'){window.__BG_API__
 })();
 </script>
 
-<!-- TIZANDISH: About, privacy and support section -->
+<!-- TIZANDISH: polished product footer, support and sharing -->
 <style>
-.tz-info{max-width:1120px;margin:28px auto 0;padding:0 14px}.tz-info-wrap{border:1px solid #293140;border-radius:18px;overflow:hidden;background:linear-gradient(145deg,#171e2a,#11151c);box-shadow:0 12px 40px #0002}.tz-info-top{padding:22px 20px 18px;border-bottom:1px solid #293140}.tz-info-brand{display:flex;align-items:center;gap:10px;margin-bottom:8px}.tz-info-mark{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#6f8dff,#55d5b0);font-size:19px;color:#08121a}.tz-info h2{font-size:18px;margin:0;font-weight:850;color:#f2f5fb}.tz-info p{margin:8px 0 0;color:#a8b3c4;font-size:13px;line-height:1.9}.tz-info-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0}.tz-info-card{padding:18px 20px;border-left:1px solid #293140}.tz-info-card:last-child{border-left:0}.tz-info-card h3{font-size:14px;margin:0 0 7px;color:#e5edff}.tz-info-card p{margin:0;font-size:12.5px}.tz-info-links{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}.tz-info-link{display:inline-flex;align-items:center;justify-content:center;padding:8px 12px;border:1px solid #344157;border-radius:10px;text-decoration:none!important;color:#d5e3ff!important;background:#182131;font-size:12px;font-weight:750}.tz-info-link:hover{border-color:#6f8dff;background:#202b40}.tz-info-link.support{border-color:#365b4d;background:#13251e;color:#9ce6c5!important}.tz-info-bottom{padding:12px 20px;border-top:1px solid #293140;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;color:#7f8ca0;font-size:11px}.tz-info-bottom strong{color:#aab9d2}@media(max-width:700px){.tz-info-grid{grid-template-columns:1fr}.tz-info-card{border-left:0;border-bottom:1px solid #293140}.tz-info-card:last-child{border-bottom:0}.tz-info-top,.tz-info-card,.tz-info-bottom{padding:16px}}
+:root{scroll-behavior:smooth}
+body{background-image:radial-gradient(900px 420px at 90% -8%,rgba(80,120,255,.14),transparent 65%),radial-gradient(700px 360px at 5% 45%,rgba(67,213,177,.07),transparent 60%),linear-gradient(180deg,#0b0e14,#0d1016)}
+.tz-info{max-width:1120px;margin:34px auto 0;padding:0 14px}
+.tz-shell{position:relative;overflow:hidden;border:1px solid rgba(126,153,199,.2);border-radius:24px;background:linear-gradient(145deg,rgba(25,32,46,.96),rgba(13,17,24,.98));box-shadow:0 22px 70px rgba(0,0,0,.26)}
+.tz-shell:before{content:"";position:absolute;inset:0 0 auto;height:2px;background:linear-gradient(90deg,#5ed7b3,#7d91ff,#b38cff);opacity:.9}
+.tz-hero{position:relative;padding:clamp(20px,4vw,34px);display:flex;align-items:center;gap:18px;border-bottom:1px solid rgba(126,153,199,.15)}
+.tz-mark{width:54px;height:54px;flex:0 0 54px;display:grid;place-items:center;border-radius:17px;background:linear-gradient(140deg,#7e9bff,#53d6b3);color:#08121b;font-size:25px;box-shadow:0 8px 28px rgba(92,136,255,.22)}
+.tz-title{font-size:clamp(18px,3vw,24px);font-weight:900;letter-spacing:-.3px;margin:0;color:#f4f7ff}
+.tz-subtitle{margin:6px 0 0!important;color:#aab7cc!important;font-size:13px!important;max-width:760px}
+.tz-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+.tz-chip{font-size:11px;padding:5px 9px;border:1px solid rgba(125,153,198,.2);background:rgba(255,255,255,.035);color:#c9d6ea;border-radius:999px}
+.tz-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+.tz-card{padding:20px;min-width:0;border-left:1px solid rgba(126,153,199,.14)}
+.tz-card:last-child{border-left:0}
+.tz-card h3{margin:0 0 8px;font-size:14px;color:#f0f4ff;font-weight:850}
+.tz-card p{margin:0;color:#aab6c8;font-size:12.5px;line-height:1.95}
+.tz-icon{display:inline-grid;place-items:center;width:31px;height:31px;border-radius:10px;background:rgba(112,143,255,.11);border:1px solid rgba(112,143,255,.15);margin-left:8px;vertical-align:middle}
+.tz-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}
+.tz-btn{border:1px solid rgba(133,159,205,.24);border-radius:12px;padding:10px 14px;min-height:42px;background:rgba(255,255,255,.045);color:#e8efff;font:inherit;font-size:12px;font-weight:800;cursor:pointer;transition:transform .16s,border-color .16s,background .16s}
+.tz-btn:hover{transform:translateY(-1px);border-color:#7997ff;background:rgba(100,135,255,.1)}
+.tz-btn.primary{border-color:rgba(92,211,174,.28);background:linear-gradient(120deg,rgba(64,174,143,.17),rgba(90,126,255,.14));color:#c6ffeb}
+.tz-btn:focus-visible{outline:2px solid #91a9ff;outline-offset:2px}
+.tz-support{background:linear-gradient(135deg,rgba(42,75,64,.16),rgba(46,55,91,.12))}
+.tz-support-note{display:flex;gap:10px;align-items:flex-start;margin-top:12px;padding:10px 12px;border:1px solid rgba(104,210,171,.17);border-radius:12px;background:rgba(51,142,111,.07);color:#a8ddc9;font-size:11.5px;line-height:1.8}
+.tz-bottom{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:13px 20px;border-top:1px solid rgba(126,153,199,.14);color:#7f8ca2;font-size:11px}
+.tz-bottom strong{color:#b9c8e2}
+#tz-share-status{min-height:18px;margin-top:8px;color:#91dfc2;font-size:11px}
+@media(max-width:760px){.tz-grid{grid-template-columns:1fr}.tz-card{border-left:0;border-bottom:1px solid rgba(126,153,199,.14);padding:17px}.tz-card:last-child{border-bottom:0}.tz-hero{align-items:flex-start}.tz-bottom{padding:13px 16px}}
+@media(prefers-reduced-motion:reduce){:root{scroll-behavior:auto}.tz-btn{transition:none}}
 </style>
-<section class="tz-info" aria-label="درباره ابزار و حمایت از تیزاندیش">
- <div class="tz-info-wrap">
-  <div class="tz-info-top">
-   <div class="tz-info-brand"><span class="tz-info-mark" aria-hidden="true">✂</span><h2>تیزاندیش | ابزار حذف پس‌زمینه و ویرایش تصویر</h2></div>
-   <p>یک ابزار رایگان و در دسترس برای جداکردن سوژه، پاک‌سازی پس‌زمینه و آماده‌سازی تصویر؛ با هدف ساده‌ترکردن کارهای طراحی، تولید محتوا و استفاده روزمره، بدون نیاز به نصب نرم‌افزار سنگین.</p>
+<section class="tz-info" aria-label="معرفی ابزار، حمایت و اشتراک‌گذاری">
+ <div class="tz-shell">
+  <header class="tz-hero">
+   <div class="tz-mark" aria-hidden="true">✦</div>
+   <div>
+    <h2 class="tz-title">تیزاندیش | استودیو تصویر</h2>
+    <p class="tz-subtitle">ابزار ساده و کاربردی برای حذف پس‌زمینه، پاک‌سازی تصویر و آماده‌سازی عکس برای طراحی و تولید محتوا — بدون نصب برنامه سنگین.</p>
+    <div class="tz-chips"><span class="tz-chip">📱 سازگار با موبایل</span><span class="tz-chip">🎨 ابزارهای ویرایش</span><span class="tz-chip">✨ تجربه فارسی</span></div>
+   </div>
+  </header>
+  <div class="tz-grid">
+   <article class="tz-card">
+    <h3><span class="tz-icon">🧰</span>درباره ابزار</h3>
+    <p>امکانات ویرایش و حذف پس‌زمینه، تنظیم ماسک و لبه‌ها و خروجی تصویر در یک محیط یکپارچه گردآوری شده‌اند تا کارهای روزمره طراحی سریع‌تر و آسان‌تر شوند.</p>
+   </article>
+   <article class="tz-card">
+    <h3><span class="tz-icon">🔐</span>حریم خصوصی</h3>
+    <p>بخش زیادی از پردازش‌ها در مرورگر انجام می‌شود. برخی قابلیت‌ها ممکن است برای بارگیری مدل یا کتابخانه به اینترنت نیاز داشته باشند؛ در صورت استفاده از سرویس خارجی، سیاست آن سرویس ملاک است.</p>
+   </article>
+   <article class="tz-card tz-support" id="tz-support">
+    <h3><span class="tz-icon">💚</span>حمایت از ما</h3>
+    <p>اگر این ابزار به کارتان آمد، حمایت شما با معرفی به دوستان، استفاده و ارسال پیشنهاد یا گزارش مشکل، به بهترشدن و ادامه توسعه تیزاندیش کمک می‌کند. روش حمایت مالی رسمی پس از آماده‌سازی، همین‌جا اعلام می‌شود.</p>
+    <div class="tz-actions"><button type="button" class="tz-btn primary" id="tz-share-btn">↗ معرفی به دوستان</button><button type="button" class="tz-btn" id="tz-copy-btn">⧉ کپی لینک سایت</button></div>
+    <div id="tz-share-status" role="status" aria-live="polite"></div>
+   </article>
   </div>
-  <div class="tz-info-grid">
-   <article class="tz-info-card"><h3>🛠️ درباره ابزار</h3><p>امکانات کلاسیک و هوشمند، تنظیمات ماسک و لبه، پیش‌نمایش و خروجی‌های تصویری در یک محیط فارسی و سازگار با موبایل جمع شده‌اند.</p></article>
-   <article class="tz-info-card"><h3>🔒 حریم خصوصی</h3><p>پردازش‌ها تا حد ممکن در مرورگر انجام می‌شوند. بعضی قابلیت‌ها برای دریافت کتابخانه یا مدل به اینترنت نیاز دارند؛ در صورت اتصال به سرویس خارجی، شرایط همان سرویس را بررسی کنید.</p></article>
-   <article class="tz-info-card"><h3>💚 حمایت از توسعه</h3><p>با معرفی ابزار به دوستان، ارسال بازخورد و گزارش ایراد به ادامه توسعه کمک کنید. درگاه یا روش حمایت مالی رسمی پس از آماده‌شدن، در همین بخش اضافه خواهد شد.</p><div class="tz-info-links"><a class="tz-info-link support" href="https://github.com/arashrajabifar1-tech/tizandish-image-studio" target="_blank" rel="noopener noreferrer">مشاهده پروژه در GitHub</a></div></article>
-  </div>
-  <div class="tz-info-bottom"><span>ساخته‌شده با علاقه در <strong>تیزاندیش</strong> ✨</span><span>ابزارها برای خلاقیت، یادگیری و کار آسان‌تر</span></div>
+  <footer class="tz-bottom"><span>ساخته‌شده با علاقه در <strong>تیزاندیش</strong> ✨</span><span>برای خلاقیت، یادگیری و کار آسان‌تر</span></footer>
  </div>
 </section>
+<script>
+(()=>{const shareBtn=document.getElementById('tz-share-btn'),copyBtn=document.getElementById('tz-copy-btn'),status=document.getElementById('tz-share-status');if(!shareBtn||!copyBtn||!status)return;const url=location.href.split('#')[0],shareData={title:document.title,text:'ابزار رایگان تیزاندیش برای حذف پس‌زمینه و ویرایش تصویر را ببین:',url};const msg=(t)=>{status.textContent=t;};shareBtn.addEventListener('click',async()=>{try{if(navigator.share){await navigator.share(shareData);msg('ممنون از معرفی ابزار 🌱');}else{await navigator.clipboard.writeText(url);msg('لینک سایت کپی شد؛ برای دوستانتان ارسال کنید.');}}catch(e){if(e&&e.name==='AbortError')return;try{await navigator.clipboard.writeText(url);msg('لینک سایت کپی شد؛ برای دوستانتان ارسال کنید.');}catch(_){msg('لطفاً لینک سایت را از نوار آدرس مرورگر کپی کنید.');}}});copyBtn.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(url);msg('لینک سایت کپی شد.');}catch(e){msg('کپی خودکار در این مرورگر فعال نیست؛ لینک را از نوار آدرس کپی کنید.');}});})();
+</script>
 </body>
 </html>
