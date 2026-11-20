@@ -33,7 +33,7 @@ async function makePng(page, width, height, draw) {
 test('internal regression suite passes and reports the current release', async ({ page }) => {
   await openTestBuild(page);
   const report = await page.locator('#testReport').textContent();
-  expect(report).toContain('Self-test v2.8.1.8');
+  expect(report).toContain('Self-test v3.2.0');
   expect(report).toContain('حفظ شفافیت خروجی');
   expect(report).toContain('حفظ گوشهٔ انتهایی پس از کوچک‌سازی');
   expect(report).toContain('انتقال خودکار GPU به CPU');
@@ -169,4 +169,42 @@ test('prompt assistant applies output preferences without an uploaded image', as
   expect(result.background).toBe('white');
   expect(result.format).toBe('png');
   expect(result.feather).toBe('2');
+});
+
+
+test('batch UI processes two images and creates a ZIP download', async ({ page }) => {
+  await page.goto('/');
+  const first = await makePng(page, 160, 120, 'subject');
+  const second = await makePng(page, 180, 140, 'subject');
+  await page.locator('#file').setInputFiles({
+    name: 'first.png', mimeType: 'image/png', buffer: Buffer.from(first.bytes)
+  });
+  await expect(page.locator('#editor')).toBeVisible();
+  await page.locator('#batchFiles').setInputFiles([
+    { name: 'first.png', mimeType: 'image/png', buffer: Buffer.from(first.bytes) },
+    { name: 'second.png', mimeType: 'image/png', buffer: Buffer.from(second.bytes) }
+  ]);
+  await expect(page.locator('#batchRun')).toBeEnabled();
+  const downloadPromise = page.waitForEvent('download');
+  await page.locator('#batchRun').click();
+  await expect(page.locator('#batchStatus')).toContainText('تمام شد', { timeout: 30000 });
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toBe('tizandish-image-studio-batch.zip');
+});
+
+test('ZIP builder creates valid local-file and end-directory signatures', async ({ page }) => {
+  await openTestBuild(page);
+  const result = await page.evaluate(async () => {
+    const blob = await window.__BG_API__.zipStored([
+      { name: 'one.txt', blob: new Blob(['test']) }
+    ]);
+    const bytes = new Uint8Array(await blob.arrayBuffer());
+    return { local: bytes[0] | (bytes[1] << 8) | (bytes[2] << 16) | (bytes[3] << 24),
+      end: bytes[bytes.length - 22] | (bytes[bytes.length - 21] << 8) |
+        (bytes[bytes.length - 20] << 16) | (bytes[bytes.length - 19] << 24),
+      count: new DataView(bytes.buffer).getUint16(bytes.length - 12, true) };
+  });
+  expect(result.local >>> 0).toBe(0x04034b50);
+  expect(result.end >>> 0).toBe(0x06054b50);
+  expect(result.count).toBe(1);
 });
