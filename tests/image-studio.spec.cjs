@@ -33,7 +33,7 @@ async function makePng(page, width, height, draw) {
 test('internal regression suite passes and reports the current release', async ({ page }) => {
   await openTestBuild(page);
   const report = await page.locator('#testReport').textContent();
-  expect(report).toContain('Self-test v2.8.1.7');
+  expect(report).toContain('Self-test v2.8.1.8');
   expect(report).toContain('حفظ شفافیت خروجی');
   expect(report).toContain('حفظ گوشهٔ انتهایی پس از کوچک‌سازی');
   expect(report).toContain('انتقال خودکار GPU به CPU');
@@ -130,4 +130,43 @@ test('mobile layout does not create horizontal page overflow', async ({ page }) 
     content: document.documentElement.scrollWidth
   }));
   expect(metrics.content).toBeLessThanOrEqual(metrics.viewport + 1);
+});
+
+test('local prompt assistant maps supported commands and rejects unsupported ones', async ({ page }) => {
+  await openTestBuild(page);
+  const result = await page.evaluate(() => {
+    const api = window.__BG_API__;
+    return {
+      remove: api.interpretLocalPrompt('پس زمینه را حذف کن و PNG شفاف'),
+      profile: api.interpretLocalPrompt('عکس پروفایل آماده کن'),
+      white: api.interpretLocalPrompt('پس زمینه سفید شود'),
+      soften: api.interpretLocalPrompt('لبه ها نرم تر شوند'),
+      unsupported: api.interpretLocalPrompt('یک منظره خیالی با اژدها بساز')
+    };
+  });
+  expect(result.remove.ok).toBe(true);
+  expect(result.remove.actions).toContain('remove');
+  expect(result.remove.actions).toContain('transparent');
+  expect(result.remove.actions).toContain('png');
+  expect(result.profile.actions).toContain('profile');
+  expect(result.white.actions).toContain('white');
+  expect(result.soften.actions).toContain('soften');
+  expect(result.unsupported.ok).toBe(false);
+  expect(result.unsupported.reason).toContain('پشتیبانی');
+});
+
+test('prompt assistant applies output preferences without an uploaded image', async ({ page }) => {
+  await openTestBuild(page);
+  const result = await page.evaluate(() => {
+    const api = window.__BG_API__;
+    const applied = api.applyLocalPrompt('پس زمینه سفید، عکس محصول و PNG');
+    return { ok: applied.ok, mode: document.querySelector('#modeAi').checked,
+      background: document.querySelector('#bgMode').value, format: document.querySelector('#format').value,
+      feather: document.querySelector('#feather').value };
+  });
+  expect(result.ok).toBe(true);
+  expect(result.mode).toBe(true);
+  expect(result.background).toBe('white');
+  expect(result.format).toBe('png');
+  expect(result.feather).toBe('2');
 });
