@@ -913,25 +913,31 @@ async function zipStored(entries){
 function batchBaseName(name){return(String(name||'image').replace(/\.[^.]+$/,'').replace(/[\\/:*?"<>|]/g,'_').trim()||'image')}
 async function batchProcess(){
  if(!batchFiles.length)return;
- const list=[...batchFiles];batchRun.disabled=true;batchChoose.disabled=true;batchStatus.className='batch-status busy';const outputs=[];let failed=[];
+ if(busy){batchStatus.className='batch-status error';batchStatus.textContent='پردازش دیگری در حال اجراست؛ پس از پایان دوباره تلاش کنید.';return}
+ const list=[...batchFiles],outputs=[],failed=[],names=new Set();batchRun.disabled=true;batchChoose.disabled=true;processBtn.disabled=true;clearTimeout(timer);batchStatus.className='batch-status busy';
  const mode=modeAi.checked?'ai':'classic',fmt=formatSel.value;
  try{
   for(let i=0;i<list.length;i++){
    const file=list[i];batchStatus.textContent=(i+1)+'/'+list.length+' — در حال پردازش '+file.name+' ('+(mode==='ai'?'AI با پشتیبان کلاسیک':'کلاسیک')+')…';
-   if(!isSupportedImageFile(file))throw new Error('فرمت پشتیبانی‌نشده: '+file.name);
-   await loadFile(file);clearTimeout(timer);
-   if(sourceFile!==file||!sourceBitmap)throw new Error('بارگذاری تصویر ناموفق: '+file.name);
-   if(mode==='ai'){busy=true;processBtn.disabled=true;await aiProcess()}else{classicProcess()}
-   if(!hasResult||!currentMask)throw new Error('پردازش نتیجه نداد: '+file.name);
-   const canvas=buildTargetCanvas(),mime=fmt==='png'?'image/png':fmt==='webp'?'image/webp':fmt==='avif'?'image/avif':'image/jpeg',q=clamp(Number(quality.value)/100,.6,1);
-   const blob=await canvasToBlob(canvas,mime,q);if(!blob)throw new Error('ساخت خروجی ناموفق: '+file.name);
-   const ext=actualFormat(blob),base=batchBaseName(file.name),suffix=bgMode.value==='transparent'&&fmt!=='jpeg'?'transparent':bgMode.value;
-   outputs.push({name:base+'-'+suffix+'.'+ext,blob});
-   batchStatus.textContent=(i+1)+'/'+list.length+' ✓ '+file.name+' — خروجی آماده شد ('+(blob.size/1024).toFixed(0)+' KB)';
+   try{
+    if(!isSupportedImageFile(file))throw new Error('فرمت پشتیبانی‌نشده');
+    await loadFile(file);clearTimeout(timer);
+    if(sourceFile!==file||!sourceBitmap)throw new Error('بارگذاری تصویر ناموفق');
+    if(mode==='ai'){busy=true;processBtn.disabled=true;await aiProcess();busy=true;processBtn.disabled=true}else{classicProcess()}
+    if(!hasResult||!currentMask)throw new Error('پردازش نتیجه نداد');
+    const canvas=buildTargetCanvas(),mime=fmt==='png'?'image/png':fmt==='webp'?'image/webp':fmt==='avif'?'image/avif':'image/jpeg',q=clamp(Number(quality.value)/100,.6,1);
+    const blob=await canvasToBlob(canvas,mime,q);if(!blob)throw new Error('ساخت خروجی ناموفق');
+    const ext=actualFormat(blob),base=batchBaseName(file.name),suffix=bgMode.value==='transparent'&&fmt!=='jpeg'?'transparent':bgMode.value;
+    let outputName=base+'-'+suffix+'.'+ext,serial=2;while(names.has(outputName)){outputName=base+'-'+suffix+'-'+serial+'.'+ext;serial++}names.add(outputName);
+    outputs.push({name:outputName,blob});
+    batchStatus.textContent=(i+1)+'/'+list.length+' ✓ '+file.name+' — خروجی آماده شد ('+(blob.size/1024).toFixed(0)+' KB)';
+   }catch(err){failed.push(file.name+': '+(err.message||'خطا'));batchStatus.textContent=(i+1)+'/'+list.length+' — رد شد: '+file.name+'؛ فایل بعدی…'}
   }
+  if(!outputs.length)throw new Error('هیچ تصویری با موفقیت پردازش نشد. '+failed.join(' | '));
+  if(failed.length)outputs.push({name:'batch-report.txt',blob:new Blob(['Processed: '+outputs.length+'\nSkipped: '+failed.join('\n')],{type:'text/plain;charset=utf-8'}));
   const zip=await zipStored(outputs);downloadBlob(zip,'tizandish-image-studio-batch.zip');
-  batchStatus.className='batch-status ok';batchStatus.textContent='تمام شد ✓ '+outputs.length+' تصویر پردازش و داخل ZIP ذخیره شد ('+(zip.size/1024/1024).toFixed(2)+' MB).';
- }catch(e){console.error(e);batchStatus.className='batch-status error';batchStatus.textContent='پردازش گروهی متوقف شد: '+e.message+(outputs.length?'\n'+outputs.length+' خروجی تا پیش از خطا آماده شده بود.':'')}
+  batchStatus.className='batch-status ok';batchStatus.textContent='تمام شد ✓ '+(outputs.length-(failed.length?1:0))+' تصویر پردازش و داخل ZIP ذخیره شد ('+(zip.size/1024/1024).toFixed(2)+' MB).'+(failed.length?' '+failed.length+' فایل ناموفق؛ گزارش داخل ZIP است.':'');
+ }catch(e){console.error(e);batchStatus.className='batch-status error';batchStatus.textContent='پردازش گروهی ناموفق: '+e.message}
  finally{busy=false;processBtn.disabled=false;batchRun.disabled=!batchFiles.length;batchChoose.disabled=false}
 }
 batchRun.addEventListener('click',batchProcess);
