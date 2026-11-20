@@ -894,7 +894,7 @@ batchFilesInput.addEventListener('change',()=>{
  batchSelection.textContent=batchFiles.length?batchFiles.map((f,i)=>(i+1)+'. '+f.name+' ('+(f.size/1024/1024).toFixed(1)+' MB)').join('\n'):'هنوز تصویری انتخاب نشده است.';
  batchRun.disabled=!batchFiles.length||batchFiles.length>batchMaxFiles||total>batchMaxBytes;
  batchStatus.className='batch-status';
- batchStatus.textContent=batchFiles.length>batchMaxFiles?'حداکثر '+batchMaxFiles+' فایل قابل انتخاب است.':total>batchMaxBytes?'مجموع حجم انتخابی بیش از ۱۰۰ مگابایت است؛ فایل‌های کمتری انتخاب کنید.':batchFiles.length?batchFiles.length+' فایل انتخاب شد؛ حالت '+(modeAi.checked?'AI (با پشتیبان کلاسیک)':'کلاسیک')+' و تنظیمات خروجی فعلی استفاده خواهد شد.':'حداکثر ۱۵ تصویر و مجموع ۱۸۰ مگابایت برای حفظ پایداری گوشی.';
+ batchStatus.textContent=batchFiles.length>batchMaxFiles?'حداکثر '+batchMaxFiles+' فایل قابل انتخاب است.':total>batchMaxBytes?'مجموع حجم انتخابی بیش از ۱۰۰ مگابایت است؛ فایل‌های کمتری انتخاب کنید.':batchFiles.length?batchFiles.length+' فایل انتخاب شد؛ حالت '+(modeAi.checked?'AI (با پشتیبان کلاسیک)':'کلاسیک')+' و تنظیمات خروجی فعلی استفاده خواهد شد.':'حداکثر ۱۰ تصویر و مجموع ۱۰۰ مگابایت برای حفظ پایداری گوشی.';
 });
 function crc32(bytes){let crc=0xffffffff;for(const b of bytes){crc^=b;for(let k=0;k<8;k++)crc=(crc>>>1)^((crc&1)?0xedb88320:0)}return(crc^0xffffffff)>>>0}
 async function zipStored(entries){
@@ -939,7 +939,7 @@ async function batchProcess(){
   const zip=await zipStored(outputs);downloadBlob(zip,'tizandish-image-studio-batch.zip');
   batchStatus.className='batch-status ok';batchStatus.textContent='تمام شد ✓ '+(outputs.length-(failed.length?1:0))+' تصویر پردازش و داخل ZIP ذخیره شد ('+(zip.size/1024/1024).toFixed(2)+' MB).'+(failed.length?' '+failed.length+' فایل ناموفق؛ گزارش داخل ZIP است.':'');
  }catch(e){console.error(e);batchStatus.className='batch-status error';batchStatus.textContent='پردازش گروهی ناموفق: '+e.message}
- finally{busy=false;processBtn.disabled=false;batchRun.disabled=!batchFiles.length;batchChoose.disabled=false}
+ finally{busy=false;processBtn.disabled=false;batchRun.disabled=!batchFiles.length||batchFiles.length>batchMaxFiles||batchFiles.reduce((n,f)=>n+f.size,0)>batchMaxBytes;batchChoose.disabled=false}
 }
 batchRun.addEventListener('click',batchProcess);
 
