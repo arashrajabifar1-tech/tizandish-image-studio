@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>تیزاندیش استودیو تصویر — Tizandish 3.1.0</title>
+<title>تیزاندیش استودیو تصویر — Tizandish 3.2.0</title>
 <style>
 :root{--bg:#0d1016;--panel:#151a22;--panel2:#1b212c;--line:#293140;--txt:#eef2f8;--muted:#9aa6b7;--accent:#4e8cff;--ai:#806eff;--ok:#2fbd8d;--bad:#ff6262;--r:14px}
 *{box-sizing:border-box}html,body{margin:0;padding:0}body{min-height:100vh;padding:22px 14px 60px;background:radial-gradient(1100px 520px at 50% -10%,#1a2437 0%,var(--bg) 63%);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased}.wrap{max-width:1120px;margin:auto}.head{text-align:center;margin-bottom:18px}.head h1{margin:0 0 6px;font-size:clamp(21px,4vw,30px);font-weight:850;background:linear-gradient(90deg,#9ebcff,#5b90ff,#5ad8ad);-webkit-background-clip:text;background-clip:text;color:transparent}.head p{margin:0;color:var(--muted);font-size:13px}.badge{display:inline-block;margin-top:9px;padding:5px 10px;border:1px solid #3a335d;border-radius:999px;background:#17152a;color:#c9c0ff;font-size:11px;font-weight:750}
@@ -107,6 +107,12 @@ body{padding:20px 14px 64px;background:radial-gradient(950px 520px at 8% -12%,rg
 
 /* Tizandish 3.1 searchable tool directory */
 .tool-finder{padding:12px!important;border:1px solid rgba(130,158,210,.28)!important;background:linear-gradient(145deg,#182236,#111823)!important}
+.batch-panel{margin-top:10px;padding:11px;border:1px solid #30445d;border-radius:12px;background:#0e1724}
+.batch-head b{display:block;font-size:13px}.batch-head small{display:block;margin-top:3px;color:var(--muted);font-size:11px;line-height:1.7}
+.batch-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:9px}.batch-actions .btn{flex:1 1 150px}
+.batch-selection{margin-top:8px;color:#a9c3e7;font-size:11px;line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere}
+.batch-status{margin-top:8px;padding:8px;border:1px solid #26364c;border-radius:9px;background:#111925;color:#9aaec8;font-size:11px;line-height:1.7}
+.batch-status.ok{color:#8de2be;border-color:#1f493a;background:#10201a}.batch-status.error{color:#ffb4b4;border-color:#4a2222;background:#201313}.batch-status.busy{color:#afd0ff;border-color:#203c60;background:#111b2b}
 .tool-finder-head{display:flex;justify-content:space-between;align-items:center;gap:12px}.tool-finder-head b{display:block;font-size:14px}.tool-finder-head small{display:block;color:var(--muted);font-size:11.5px;margin-top:3px}.tool-count{font-size:11px;color:#c7d7ff;border:1px solid #344967;border-radius:999px;padding:4px 9px;white-space:nowrap}
 .tool-search-label{display:block;font-size:11.5px;font-weight:800;color:var(--muted);margin:10px 0 5px}#toolSearch{width:100%;padding:10px 12px;border-radius:11px;border:1px solid #3a4a64;background:#0e1624;color:var(--txt);font:inherit;font-size:13px;outline:none}#toolSearch:focus-visible{border-color:#88a6ff;box-shadow:0 0 0 3px #668cff22}.tool-hint{font-size:10.5px;color:#8797b1;margin:4px 0 9px}
 .tool-workflows{display:flex;flex-wrap:wrap;gap:6px}.tool-workflow{flex:1 1 130px;padding:8px;border:1px solid #34445c;border-radius:10px;background:#151f30;color:#d9e5fa;font:inherit;font-size:11.5px;font-weight:750;cursor:pointer}.tool-workflow:hover{border-color:#829eff;background:#1b2940}
@@ -116,7 +122,7 @@ body{padding:20px 14px 64px;background:radial-gradient(950px 520px at 8% -12%,rg
 </head>
 <body>
 <div class="wrap">
-<header class="head"><div class="brand-mark" aria-hidden="true">✦</div><h1>تیزاندیش | استودیو تصویر</h1><p>از برش هوشمند تا خلق تصویر؛ ابزارهای حرفه‌ای، ساده و در دسترس</p><div class="badge">نسخه 3.1.0 • راهنمای ابزار و دسترسی سریع</div><div class="feature-strip" aria-label="ویژگی‌های استودیو"><span>✂️ برش و دوربری</span><span>🪄 پاک‌سازی هوشمند</span><span>🎨 طراحی و خروجی</span><span>📱 سازگار با موبایل</span></div></header>
+<header class="head"><div class="brand-mark" aria-hidden="true">✦</div><h1>تیزاندیش | استودیو تصویر</h1><p>از برش هوشمند تا خلق تصویر؛ ابزارهای حرفه‌ای، ساده و در دسترس</p><div class="badge">نسخه 3.2.0 • ابزار گروهی و راهنمای سریع</div><div class="feature-strip" aria-label="ویژگی‌های استودیو"><span>✂️ برش و دوربری</span><span>🪄 پاک‌سازی هوشمند</span><span>🎨 طراحی و خروجی</span><span>📱 سازگار با موبایل</span></div></header>
 <section id="drop" class="drop" role="button" tabindex="0" aria-label="انتخاب تصویر"><input id="file" type="file" accept="image/*,.heic,.heif,.tif,.tiff,.avif,.bmp,.svg" hidden><div class="ico">🖼️</div><div class="t">تصویر را انتخاب یا اینجا رها کنید</div><div class="s">کلیک کنید، Drag & Drop یا Ctrl+V</div></section>
 <div class="source-actions" aria-label="روش‌های ورود تصویر"><button id="cameraOpen" class="btn ai" type="button">📷 باز کردن دوربین</button><button id="cameraFallbackOpen" class="btn ghost" type="button">📸 دوربین گوشی / انتخاب عکس</button><input id="cameraFile" type="file" accept="image/*" capture="environment" hidden></div>
 <section id="cameraPanel" class="camera-panel hidden" aria-label="دوربین"><div class="camera-head"><b>📷 ثبت تصویر</b><span id="cameraStatus" role="status" aria-live="polite">برای شروع، اجازهٔ دسترسی دوربین را بدهید.</span></div><video id="cameraVideo" autoplay playsinline muted></video><div class="actions"><button id="cameraCapture" class="btn ok" type="button" disabled>ثبت عکس</button><button id="cameraFlip" class="btn ghost" type="button">تعویض دوربین جلو / عقب</button><button id="cameraClose" class="btn ghost" type="button">بستن دوربین</button></div></section>
@@ -757,7 +763,7 @@ const testCrop=cropCanvasRect(c,{left:20,top:15,right:120,bottom:95});ok('برش
 const skewPts=[{x:35,y:20},{x:285,y:42},{x:300,y:205},{x:18,y:190}];const testWarp=await perspectiveWarpCanvas(c,skewPts,()=>{});ok('تبدیل پرسپکتیو واقعیِ چهارگوشه‌ای',testWarp.width>0&&testWarp.height>0&&testWarp.width<=5000&&testWarp.height<=5000&&validateQuad(skewPts));const savedSW=sourceW,savedSH=sourceH;sourceW=320;sourceH=240;const polyCut=maskCropCanvas(c,[{x:20,y:20},{x:140,y:25},{x:120,y:90},{x:85,y:130},{x:30,y:100}],'polygon'),polyData=polyCut.getContext('2d').getImageData(0,0,polyCut.width,polyCut.height).data;ok('برش دوربری چندنقطه‌ای و شفافیت',polyCut.width===120&&polyCut.height===110&&polyData[(119*4)+3]===0);const ellipseCut=maskCropCanvas(c,[{x:30,y:20},{x:150,y:20},{x:150,y:100},{x:30,y:100}],'ellipse'),ellipseData=ellipseCut.getContext('2d').getImageData(0,0,ellipseCut.width,ellipseCut.height).data;ok('برش بیضی با لبهٔ شفاف',ellipseData[3]===0&&ellipseData[(40*ellipseCut.width+60)*4+3]>0);sourceW=savedSW;sourceH=savedSH;const fake=new Uint8ClampedArray(8*8*4);for(let yy=0;yy<8;yy++)for(let xx=0;xx<8;xx++){const k=(yy*8+xx)*4;fake[k]=xx<4?20:220;fake[k+1]=fake[k+2]=20;fake[k+3]=255}const region=magicColorRegion({data:fake},8,8,1,1,5,1);ok('انتخاب هوشمند ناحیهٔ هم‌رنگ',region[0]===255&&region[7]===0&&region[63]===0);
 const matteTestCanvas=document.createElement('canvas');matteTestCanvas.width=32;matteTestCanvas.height=24;const mt=matteTestCanvas.getContext('2d');mt.fillStyle='#fff';mt.fillRect(0,0,32,24);mt.fillStyle='#586878';mt.fillRect(8,6,16,12);mt.strokeStyle='#168dff';mt.lineWidth=3;mt.strokeRect(7,5,18,14);const matteTest=extractChromeLayers(matteTestCanvas,32,24,34,22,75,38),mtx=matteTest.textCanvas.getContext('2d').getImageData(0,0,32,24).data,mgx=matteTest.glowCanvas.getContext('2d').getImageData(0,0,32,24).data;ok('کروم: زمینهٔ سفیدِ متصل شفاف',mtx[3]===0);ok('کروم: سوژهٔ داخلی حفظ می‌شود',mtx[(12*32+16)*4+3]===255);ok('Glow: لایهٔ جدا تولید می‌شود',mgx[(5*32+16)*4+3]>0);const promptRight=buildViewPrompt(30,'right','Keep the same person.');ok('پرامپت زاویهٔ ۳۰ درجه به راست',promptRight.includes('30 degrees to the right')&&promptRight.includes('NOT a flat in-plane rotation'));ok('حفظ هویت، نور و نسبت تصویر در پرامپت',promptRight.includes('exact identity')&&promptRight.includes('lighting direction')&&promptRight.includes('original aspect ratio'));ok('پرامپت چپ و تغییر ارتفاع',buildViewPrompt(45,'left').includes('45 degrees to the left')&&buildViewPrompt(20,'higher').includes('raising the camera viewpoint'));
 const tinyPng='iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/9ioAAAAASUVORK5CYII=';const tinyBlob=base64ToBlob(tinyPng,'image/png');ok('تبدیل Base64 به PNG',tinyBlob.type==='image/png'&&tinyBlob.size>20);let endpointOk=false;try{endpointOk=validateViewEndpoint('https://example.com/api/viewpoint').startsWith('https://')}catch{}ok('اعتبارسنجی HTTPS برای API',endpointOk);let insecureRejected=false;try{validateViewEndpoint('http://example.com/api')}catch{insecureRejected=true}ok('رد API ناامن HTTP',insecureRejected);let invalidB64Rejected=false;try{base64ToBlob('%%%','image/png')}catch{invalidB64Rejected=true}ok('رد Base64 نامعتبر',invalidB64Rejected);
-testReport.textContent='Self-test v2.8.1.8\n'+rows.join('\n')+'\n\nتولید زندهٔ مدل مولد فقط با API واسط و کلید معتبر قابل آزمایش است؛ آزمون ارتباط ساختگی در تست‌ها به‌عنوان تولید واقعی گزارش نمی‌شود.'}catch(e){ok('اجرای تست‌ها',false,e.message);testReport.textContent='Self-test error\n'+rows.join('\n')}}
+testReport.textContent='Self-test v3.2.0\n'+rows.join('\n')+'\n\nتولید زندهٔ مدل مولد فقط با API واسط و کلید معتبر قابل آزمایش است؛ آزمون ارتباط ساختگی در تست‌ها به‌عنوان تولید واقعی گزارش نمی‌شود.'}catch(e){ok('اجرای تست‌ها',false,e.message);testReport.textContent='Self-test error\n'+rows.join('\n')}}
 // UI events
 cameraOpenButton.addEventListener('click',startCamera);cameraFallbackOpen.addEventListener('click',()=>cameraFileInput.click());cameraFlip.addEventListener('click',()=>{cameraFacing=cameraFacing==='environment'?'user':'environment';startCamera()});cameraCapture.addEventListener('click',captureCameraPhoto);cameraClose.addEventListener('click',()=>{stopCamera();cameraPanel.classList.add('hidden')});cameraFileInput.addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];if(f)loadFile(f);e.target.value=''});
 drop.addEventListener('click',()=>fileInput.click());drop.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();fileInput.click()}});fileInput.addEventListener('change',e=>{const f=e.target.files?.[0];if(f)loadFile(f);e.target.value=''});['dragenter','dragover'].forEach(v=>drop.addEventListener(v,e=>{e.preventDefault();drop.classList.add('drag')}));['dragleave','drop'].forEach(v=>drop.addEventListener(v,e=>{e.preventDefault();drop.classList.remove('drag')}));drop.addEventListener('drop',e=>{const f=e.dataTransfer?.files?.[0];if(f)loadFile(f)});window.addEventListener('dragover',e=>e.preventDefault());window.addEventListener('drop',e=>e.preventDefault());document.addEventListener('paste',e=>{for(const it of (e.clipboardData?.items||[])){if(it.type.startsWith('image/')){const f=it.getAsFile();if(f&&isSupportedImageFile(f)){e.preventDefault();loadFile(f)}break}}});
@@ -837,8 +843,15 @@ toolFinder.innerHTML=`
  <label class="tool-search-label" for="toolSearch">جست‌وجوی ابزار</label><input id="toolSearch" type="search" autocomplete="off" placeholder="مثلاً پرسپکتیو، حذف پس‌زمینه، هاله، خروجی…" aria-describedby="toolSearchHint">
  <div id="toolSearchHint" class="tool-hint">میانبر: کلید / برای جست‌وجو • Esc برای پاک‌کردن جستجو</div>
  <div class="tool-workflows" aria-label="مسیرهای پیشنهادی">
-  <button type="button" class="tool-workflow" data-workflow="basic">📷 آماده‌سازی عکس</button><button type="button" class="tool-workflow" data-workflow="remove">🪄 حذف پس‌زمینه</button><button type="button" class="tool-workflow" data-workflow="cleanup">🧹 پاک‌سازی موضعی</button><button type="button" class="tool-workflow" data-workflow="chrome">✨ کروم و هاله</button><button type="button" class="tool-workflow" data-workflow="view">🤖 تغییر زاویه با AI</button><button type="button" class="tool-workflow" data-workflow="export">⬇️ تنظیم خروجی</button>
+  <button type="button" class="tool-workflow" data-workflow="basic">📷 آماده‌سازی عکس</button><button type="button" class="tool-workflow" data-workflow="remove">🪄 حذف پس‌زمینه (شروع سریع)</button><button type="button" class="tool-workflow" data-workflow="cleanup">🧹 پاک‌سازی موضعی</button><button type="button" class="tool-workflow" data-workflow="chrome">✨ کروم و هاله</button><button type="button" class="tool-workflow" data-workflow="view">🤖 تغییر زاویه با AI</button><button type="button" class="tool-workflow" data-workflow="export">⬇️ تنظیم خروجی</button>
  </div>
+ <section class="batch-panel" id="batchPanel" aria-label="پردازش گروهی تصاویر">
+  <div class="batch-head"><b>📦 پردازش گروهی و ZIP</b><small>چند تصویر را یکجا انتخاب کنید؛ از حالت کلاسیک یا AI و تنظیمات خروجی فعلی استفاده می‌شود.</small></div>
+  <input id="batchFiles" type="file" accept="image/*,.heic,.heif,.tif,.tiff,.avif,.bmp,.svg" multiple hidden>
+  <div class="batch-actions"><button type="button" class="btn ghost" id="batchChoose">انتخاب چند تصویر</button><button type="button" class="btn primary" id="batchRun" disabled>پردازش و ساخت ZIP</button></div>
+  <div id="batchSelection" class="batch-selection">هنوز تصویری انتخاب نشده است.</div>
+  <div id="batchStatus" class="batch-status" role="status" aria-live="polite">حداکثر ۱۵ تصویر و مجموع ۱۸۰ مگابایت برای حفظ پایداری گوشی.</div>
+ </section>
  <div id="toolDirectory" class="tool-directory" role="list"></div><div id="toolEmpty" class="tool-empty" hidden>ابزاری پیدا نشد. عبارت دیگری جستجو کنید.</div>`;
 editor.insertBefore(toolFinder,previewPanel?.nextSibling||editor.firstChild);
 const toolCatalog=[
@@ -849,19 +862,80 @@ const toolCatalog=[
  {name:'قلم جادویی و پاک‌کن ماسک',desc:'ناحیه را با قلم انتخاب کنید، ماسک را پاک کنید، برگردانید یا پاک‌سازی را اعمال کنید.',tags:'قلم انتخاب ماسک پاک کن',target:'magicCard',keywords:'قلم جادویی ماسک پاک‌کن پاکسازی انتخاب موضعی'},
  {name:'استخراج کروم و هاله',desc:'لایه متن/کروم و هاله را جدا ذخیره کنید؛ خروجی شفاف برای ترکیب.',tags:'chrome glow matte',target:'chromeMatteCard',keywords:'کروم هاله glow نور شفاف'},
  {name:'تغییر زاویه با AI',desc:'پرامپت زاویه بسازید، ورودی را ذخیره یا به سرویس AI بفرستید و نتیجه وارد کنید.',tags:'AI viewpoint prompt',target:'viewpointCard',keywords:'هوش مصنوعی زاویه پرامپت دید'},
- {name:'حذف پس‌زمینه',desc:'روش کلاسیک یا AI را انتخاب کنید؛ ابزارهای تنظیم و پردازش اینجا هستند.',tags:'background remove حذف',target:'promptAssist',keywords:'حذف پس زمینه بکگراند پردازش کلاسیک AI'},
+ {name:'حذف پس‌زمینه',desc:'با یک لمس حالت AI را انتخاب و پردازش را شروع کنید؛ اگر AI در دسترس نباشد، کلاسیک جایگزین می‌شود.',tags:'background remove حذف',target:'remove',keywords:'حذف پس زمینه بکگراند پردازش کلاسیک AI'},
  {name:'اندازه و فرمت خروجی',desc:'ابعاد، نسبت، کیفیت، پس‌زمینه و فرمت PNG/JPEG/WebP/AVIF را تنظیم کنید.',tags:'size format export',target:'promptAssist',keywords:'خروجی اندازه کیفیت فرمت png jpeg webp avif'},
  {name:'مقایسه قبل و بعد',desc:'اسلایدر را بکشید تا نتیجه را با تصویر اصلی مقایسه کنید.',tags:'compare before after',target:'compareStage',keywords:'مقایسه قبل بعد اسلایدر'}
 ];
 const toolDirectory=$('#toolDirectory'),toolSearch=$('#toolSearch'),toolEmpty=$('#toolEmpty'),toolCount=$('#toolCount');
-function renderToolDirectory(query=''){const q=query.trim().toLocaleLowerCase();const filtered=toolCatalog.filter(t=>(t.name+' '+t.desc+' '+t.tags+' '+t.keywords).toLocaleLowerCase().includes(q));toolDirectory.innerHTML=filtered.map(t=>`<button type="button" class="tool-item" role="listitem" data-target="${t.target}" data-name="${t.name}"><b>${t.name}</b><span>${t.desc}</span><small>${t.tags}</small></button>`).join('');toolEmpty.hidden=filtered.length>0;toolCount.textContent=q?`${filtered.length} از ${toolCatalog.length}`:`${toolCatalog.length} ابزار`;toolDirectory.querySelectorAll('.tool-item').forEach(btn=>btn.addEventListener('click',()=>openToolTarget(btn.dataset.target)));}
+function renderToolDirectory(query=''){const q=query.trim().toLocaleLowerCase();const filtered=toolCatalog.filter(t=>(t.name+' '+t.desc+' '+t.tags+' '+t.keywords).toLocaleLowerCase().includes(q));toolDirectory.innerHTML=filtered.map(t=>`<button type="button" class="tool-item" role="listitem" data-target="${t.target}" data-name="${t.name}"><b>${t.name}</b><span>${t.desc}</span><small>${t.tags}</small></button>`).join('');toolEmpty.hidden=filtered.length>0;toolCount.textContent=q?`${filtered.length} از ${toolCatalog.length}`:`${toolCatalog.length} ابزار`;toolDirectory.querySelectorAll('.tool-item').forEach(btn=>btn.addEventListener('click',()=>btn.dataset.target==='remove'?runBackgroundWorkflow():openToolTarget(btn.dataset.target)));}
 function openToolTarget(target){const node=target==='compareStage'?$('#compareStage'):target==='promptAssist'?$('#promptAssist')?.closest('.card'):$('#'+target);if(!node)return;const toggle=node.querySelector(':scope > .view-intro .panel-toggle, :scope > .geom-intro .panel-toggle, :scope > .panel-toggle');if(toggle&&toggle.getAttribute('aria-expanded')==='false')toggle.click();if(node.classList.contains('panel-collapsed'))node.classList.remove('panel-collapsed');node.scrollIntoView({behavior:'smooth',block:'start'});node.setAttribute('tabindex','-1');node.focus({preventScroll:true});}
 toolSearch.addEventListener('input',()=>renderToolDirectory(toolSearch.value));
 toolSearch.addEventListener('keydown',e=>{if(e.key==='Escape'){toolSearch.value='';renderToolDirectory();toolSearch.blur();}});
 document.addEventListener('keydown',e=>{if(e.key==='/'&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!/input|textarea|select/i.test(document.activeElement?.tagName||'')){e.preventDefault();toolSearch.focus();}});
-const workflowTargets={basic:'geometryCard',remove:'promptAssist',cleanup:'magicCard',chrome:'chromeMatteCard',view:'viewpointCard',export:'promptAssist'};
-toolFinder.querySelectorAll('[data-workflow]').forEach(btn=>btn.addEventListener('click',()=>openToolTarget(workflowTargets[btn.dataset.workflow])));
+const workflowTargets={basic:'geometryCard',cleanup:'magicCard',chrome:'chromeMatteCard',view:'viewpointCard',export:'promptAssist'};
+function runBackgroundWorkflow(){
+ if(!sourceFile||!sourceBitmap){setStatus('برای حذف پس‌زمینه، ابتدا یک عکس انتخاب کنید.','busy');fileInput.click();return}
+ modeAi.checked=true;modeClassic.checked=false;syncUi();
+ processBtn.scrollIntoView({behavior:'smooth',block:'center'});
+ setStatus('حذف پس‌زمینه با AI آغاز می‌شود؛ اگر مدل در دستگاه در دسترس نباشد، پردازش کلاسیک جایگزین می‌شود.','busy');
+ processBtn.click();
+}
+toolFinder.querySelectorAll('[data-workflow]').forEach(btn=>btn.addEventListener('click',()=>btn.dataset.workflow==='remove'?runBackgroundWorkflow():openToolTarget(workflowTargets[btn.dataset.workflow])));
 renderToolDirectory();
+
+const batchFilesInput=$('#batchFiles'),batchChoose=$('#batchChoose'),batchRun=$('#batchRun'),batchSelection=$('#batchSelection'),batchStatus=$('#batchStatus');
+let batchFiles=[];
+const batchMaxFiles=15,batchMaxBytes=180*1024*1024;
+batchChoose.addEventListener('click',()=>batchFilesInput.click());
+batchFilesInput.addEventListener('change',()=>{
+ batchFiles=[...(batchFilesInput.files||[])];
+ const total=batchFiles.reduce((n,f)=>n+f.size,0);
+ batchSelection.textContent=batchFiles.length?batchFiles.map((f,i)=>(i+1)+'. '+f.name+' ('+(f.size/1024/1024).toFixed(1)+' MB)').join('\n'):'هنوز تصویری انتخاب نشده است.';
+ batchRun.disabled=!batchFiles.length||batchFiles.length>batchMaxFiles||total>batchMaxBytes;
+ batchStatus.className='batch-status';
+ batchStatus.textContent=batchFiles.length>batchMaxFiles?'حداکثر '+batchMaxFiles+' فایل قابل انتخاب است.':total>batchMaxBytes?'مجموع حجم انتخابی بیش از ۱۸۰ مگابایت است؛ فایل‌های کمتری انتخاب کنید.':batchFiles.length?batchFiles.length+' فایل انتخاب شد؛ حالت '+(modeAi.checked?'AI (با پشتیبان کلاسیک)':'کلاسیک')+' و تنظیمات خروجی فعلی استفاده خواهد شد.':'حداکثر ۱۵ تصویر و مجموع ۱۸۰ مگابایت برای حفظ پایداری گوشی.';
+});
+function crc32(bytes){let crc=0xffffffff;for(const b of bytes){crc^=b;for(let k=0;k<8;k++)crc=(crc>>>1)^((crc&1)?0xedb88320:0)}return(crc^0xffffffff)>>>0}
+async function zipStored(entries){
+ const enc=new TextEncoder(),localParts=[],centralParts=[];let offset=0;
+ for(const entry of entries){
+  const name=enc.encode(entry.name),data=new Uint8Array(await entry.blob.arrayBuffer()),crc=crc32(data);
+  const local=new Uint8Array(30+name.length),lv=new DataView(local.buffer);
+  lv.setUint32(0,0x04034b50,true);lv.setUint16(4,20,true);lv.setUint16(6,0x0800,true);lv.setUint16(8,0,true);lv.setUint16(10,0,true);lv.setUint16(12,0x0021,true);lv.setUint32(14,crc,true);lv.setUint32(18,data.length,true);lv.setUint32(22,data.length,true);lv.setUint16(26,name.length,true);lv.setUint16(28,0,true);local.set(name,30);
+  const central=new Uint8Array(46+name.length),cv=new DataView(central.buffer);
+  cv.setUint32(0,0x02014b50,true);cv.setUint16(4,20,true);cv.setUint16(6,20,true);cv.setUint16(8,0x0800,true);cv.setUint16(10,0,true);cv.setUint16(12,0,true);cv.setUint16(14,0x0021,true);cv.setUint32(16,crc,true);cv.setUint32(20,data.length,true);cv.setUint32(24,data.length,true);cv.setUint16(28,name.length,true);cv.setUint16(30,0,true);cv.setUint16(32,0,true);cv.setUint16(34,0,true);cv.setUint16(36,0,true);cv.setUint32(38,0,true);cv.setUint32(42,offset,true);central.set(name,46);
+  localParts.push(local,data);centralParts.push(central);offset+=local.length+data.length;
+ }
+ const centralOffset=offset,centralSize=centralParts.reduce((n,p)=>n+p.length,0),eocd=new Uint8Array(22),ev=new DataView(eocd.buffer);
+ ev.setUint32(0,0x06054b50,true);ev.setUint16(4,0,true);ev.setUint16(6,0,true);ev.setUint16(8,entries.length,true);ev.setUint16(10,entries.length,true);ev.setUint32(12,centralSize,true);ev.setUint32(16,centralOffset,true);ev.setUint16(20,0,true);
+ return new Blob([...localParts,...centralParts,eocd],{type:'application/zip'});
+}
+function batchBaseName(name){return(String(name||'image').replace(/\.[^.]+$/,'').replace(/[\\/:*?"<>|]/g,'_').trim()||'image')}
+async function batchProcess(){
+ if(!batchFiles.length)return;
+ const list=[...batchFiles];batchRun.disabled=true;batchChoose.disabled=true;batchStatus.className='batch-status busy';const outputs=[];let failed=[];
+ const mode=modeAi.checked?'ai':'classic',fmt=formatSel.value;
+ try{
+  for(let i=0;i<list.length;i++){
+   const file=list[i];batchStatus.textContent=(i+1)+'/'+list.length+' — در حال پردازش '+file.name+' ('+(mode==='ai'?'AI با پشتیبان کلاسیک':'کلاسیک')+')…';
+   if(!isSupportedImageFile(file))throw new Error('فرمت پشتیبانی‌نشده: '+file.name);
+   await loadFile(file);clearTimeout(timer);
+   if(sourceFile!==file||!sourceBitmap)throw new Error('بارگذاری تصویر ناموفق: '+file.name);
+   if(mode==='ai'){busy=true;processBtn.disabled=true;await aiProcess()}else{classicProcess()}
+   if(!hasResult||!currentMask)throw new Error('پردازش نتیجه نداد: '+file.name);
+   const canvas=buildTargetCanvas(),mime=fmt==='png'?'image/png':fmt==='webp'?'image/webp':fmt==='avif'?'image/avif':'image/jpeg',q=clamp(Number(quality.value)/100,.6,1);
+   const blob=await canvasToBlob(canvas,mime,q);if(!blob)throw new Error('ساخت خروجی ناموفق: '+file.name);
+   const ext=actualFormat(blob),base=batchBaseName(file.name),suffix=bgMode.value==='transparent'&&fmt!=='jpeg'?'transparent':bgMode.value;
+   outputs.push({name:base+'-'+suffix+'.'+ext,blob});
+   batchStatus.textContent=(i+1)+'/'+list.length+' ✓ '+file.name+' — خروجی آماده شد ('+(blob.size/1024).toFixed(0)+' KB)';
+  }
+  const zip=await zipStored(outputs);downloadBlob(zip,'tizandish-image-studio-batch.zip');
+  batchStatus.className='batch-status ok';batchStatus.textContent='تمام شد ✓ '+outputs.length+' تصویر پردازش و داخل ZIP ذخیره شد ('+(zip.size/1024/1024).toFixed(2)+' MB).';
+ }catch(e){console.error(e);batchStatus.className='batch-status error';batchStatus.textContent='پردازش گروهی متوقف شد: '+e.message+(outputs.length?'\n'+outputs.length+' خروجی تا پیش از خطا آماده شده بود.':'')}
+ finally{busy=false;processBtn.disabled=false;batchRun.disabled=!batchFiles.length;batchChoose.disabled=false}
+}
+batchRun.addEventListener('click',batchProcess);
+if(new URLSearchParams(location.search).get('selftest')==='1')window.__BG_API__.zipStored=zipStored;
 
 compareSlider?.addEventListener('input',updateCompare);updateCompare();formatSel.dispatchEvent(new Event('change'));magicBrushValue.textContent=magicBrushSize.value;magicToleranceValue.textContent=magicTolerance.value;magicToggle.disabled=true;chromeExtract.disabled=true;modeClassic.checked=true;modeAi.checked=false;syncUi();refreshViewPrompt();setViewAvailability();window.addEventListener('beforeunload',()=>{clearTimeout(timer);stopCamera();safeCloseBitmap()});
 if(new URLSearchParams(location.search).get('selftest')==='1'){window.__BG_API__={interpretLocalPrompt,applyLocalPrompt,classicMask,softenMask,bgAlphaToCanvas,composite,calcFit,validateQuad,solvePerspectiveMap,perspectiveWarpCanvas,cropCanvasRect,maskCropCanvas,magicColorRegion,rotateCanvas,extractChromeLayers,aiInputBlob,runAiWithFallback,loadFile,classicProcess,buildTargetCanvas,download,setMode(mode){modeAi.checked=mode==='ai';modeClassic.checked=!modeAi.checked;syncUi()},setOutput(format,background,color){formatSel.value=format;bgMode.value=background;if(color)bgColor.value=color;bgColorField.classList.toggle('hidden',background!=='color');renderChosenPreview()},getState(){return{sourceW,sourceH,workW,workH,hasResult,maskLength:currentMask?currentMask.length:0}}};window.__BG_VIEWPOINT__={buildViewPrompt,parseViewResponse,base64ToBlob,validateViewEndpoint,currentImageBlob,sendViewToAI};window.__BG_SELFTEST_PROMISE__=runSelfTests()}
