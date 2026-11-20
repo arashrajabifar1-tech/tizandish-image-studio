@@ -915,7 +915,7 @@ function batchBaseName(name){return(String(name||'image').replace(/\.[^.]+$/,'')
 async function batchProcess(){
  if(!batchFiles.length)return;
  if(busy){batchStatus.className='batch-status error';batchStatus.textContent='پردازش دیگری در حال اجراست؛ پس از پایان دوباره تلاش کنید.';return}
- const list=[...batchFiles],outputs=[],failed=[],names=new Set();batchRun.disabled=true;batchChoose.disabled=true;processBtn.disabled=true;clearTimeout(timer);batchStatus.className='batch-status busy';
+ const list=[...batchFiles],outputs=[],failed=[],names=new Set();batchRun.disabled=true;batchChoose.disabled=true;processBtn.disabled=true;busy=true;queued=false;clearTimeout(timer);batchStatus.className='batch-status busy';
  const mode=modeAi.checked?'ai':'classic',fmt=formatSel.value;
  try{
   for(let i=0;i<list.length;i++){
