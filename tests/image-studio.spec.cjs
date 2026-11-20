@@ -33,12 +33,33 @@ async function makePng(page, width, height, draw) {
 test('internal regression suite passes and reports the current release', async ({ page }) => {
   await openTestBuild(page);
   const report = await page.locator('#testReport').textContent();
-  expect(report).toContain('Self-test v3.2.0');
+  expect(report).toContain('Self-test v3.3.0');
   expect(report).toContain('حفظ شفافیت خروجی');
   expect(report).toContain('حفظ گوشهٔ انتهایی پس از کوچک‌سازی');
   expect(report).toContain('انتقال خودکار GPU به CPU');
   const failures = report.split('\n').filter(line => /^FAIL\s/.test(line));
   expect(failures, report).toEqual([]);
+});
+
+test('compact AI selector and scroll progress indicator respond to page scroll', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 420 });
+  await page.goto('/');
+  await expect(page.locator('#aiCard')).toBeVisible();
+  const styles = await page.evaluate(() => ({
+    progressBar: !!document.querySelector('#scrollProgress'),
+    progressFill: !!document.querySelector('#scrollProgressFill'),
+    modeRadius: getComputedStyle(document.querySelector('.modes .mode')).borderRadius,
+    descriptionsHidden: getComputedStyle(document.querySelector('#aiCard .mode-desc')).display === 'none'
+  }));
+  expect(styles.progressBar).toBe(true);
+  expect(styles.progressFill).toBe(true);
+  expect(styles.modeRadius).toBe('999px');
+  expect(styles.descriptionsHidden).toBe(true);
+
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  await expect.poll(async () => page.locator('#scrollProgressFill').evaluate(el => parseFloat(el.style.width) || 0)).toBeGreaterThan(90);
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect.poll(async () => page.locator('#scrollProgressFill').evaluate(el => parseFloat(el.style.width) || 0)).toBeLessThan(1);
 });
 
 test('AI resize keeps content from the far bottom-right edge', async ({ page }) => {
