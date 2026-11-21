@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>تیزاندیش استودیو تصویر — Tizandish 3.3.4</title>
+<title>تیزاندیش استودیو تصویر — Tizandish 3.3.5</title>
 <style>
 :root{--bg:#0d1016;--panel:#151a22;--panel2:#1b212c;--line:#293140;--txt:#eef2f8;--muted:#9aa6b7;--accent:#4e8cff;--ai:#806eff;--ok:#2fbd8d;--bad:#ff6262;--r:14px}
 *{box-sizing:border-box}html,body{margin:0;padding:0}body{min-height:100vh;padding:22px 14px 60px;background:radial-gradient(1100px 520px at 50% -10%,#1a2437 0%,var(--bg) 63%);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased}.wrap{max-width:1120px;margin:auto}.head{text-align:center;margin-bottom:18px}.head h1{margin:0 0 6px;font-size:clamp(21px,4vw,30px);font-weight:850;background:linear-gradient(90deg,#9ebcff,#5b90ff,#5ad8ad);-webkit-background-clip:text;background-clip:text;color:transparent}.head p{margin:0;color:var(--muted);font-size:13px}.badge{display:inline-block;margin-top:9px;padding:5px 10px;border:1px solid #3a335d;border-radius:999px;background:#17152a;color:#c9c0ff;font-size:11px;font-weight:750}
@@ -218,7 +218,7 @@ html[data-theme="light"] .crop-stage .crop-frame{box-shadow:0 0 0 1px rgba(62,91
 <body>
 <div id="scrollProgress" aria-hidden="true"><span id="scrollProgressFill"></span></div>
 <div class="wrap">
-<header class="head"><button type="button" class="theme-toggle" id="themeToggle" aria-label="تغییر حالت روز و شب" title="تغییر حالت روز و شب"><span class="theme-icon" aria-hidden="true">☀️</span><span class="theme-label">حالت روز</span></button><div class="sky-stars" aria-hidden="true"><span>✦</span><span>✧</span><span>✴</span><span>✦</span><span>✧</span><span>✷</span><span>✦</span><span>✧</span><span>✺</span><span>✦</span></div><h1><span class="title-word title-cut">برش</span> <span class="title-word title-smart">هوشمند</span> <span class="title-word title-photo">عکس</span><span class="title-divider"> · </span><span class="title-word title-brand">تیزاندیش</span></h1><p>از برش هوشمند تا خلق تصویر؛ ابزارهای حرفه‌ای، ساده و در دسترس</p><div class="badge">نسخه 3.3.4 • رابط مدرن و ستاره‌ای</div><div class="feature-strip" aria-label="ویژگی‌های استودیو"><span>✂️ برش و دوربری</span><span>🪄 پاک‌سازی هوشمند</span><span>🎨 طراحی و خروجی</span><span>📱 سازگار با موبایل</span></div></header>
+<header class="head"><button type="button" class="theme-toggle" id="themeToggle" aria-label="تغییر حالت روز و شب" title="تغییر حالت روز و شب"><span class="theme-icon" aria-hidden="true">☀️</span><span class="theme-label">حالت روز</span></button><div class="sky-stars" aria-hidden="true"><span>✦</span><span>✧</span><span>✴</span><span>✦</span><span>✧</span><span>✷</span><span>✦</span><span>✧</span><span>✺</span><span>✦</span></div><h1><span class="title-word title-cut">برش</span> <span class="title-word title-smart">هوشمند</span> <span class="title-word title-photo">عکس</span><span class="title-divider"> · </span><span class="title-word title-brand">تیزاندیش</span></h1><p>از برش هوشمند تا خلق تصویر؛ ابزارهای حرفه‌ای، ساده و در دسترس</p><div class="badge">نسخه 3.3.5 • تم روز و شب یکپارچه</div><div class="feature-strip" aria-label="ویژگی‌های استودیو"><span>✂️ برش و دوربری</span><span>🪄 پاک‌سازی هوشمند</span><span>🎨 طراحی و خروجی</span><span>📱 سازگار با موبایل</span></div></header>
 <section id="drop" class="drop" role="button" tabindex="0" aria-label="انتخاب تصویر"><input id="file" type="file" accept="image/*,.heic,.heif,.tif,.tiff,.avif,.bmp,.svg" hidden><div class="ico">🖼️</div><div class="t">تصویر را انتخاب یا اینجا رها کنید</div><div class="s">کلیک کنید، Drag & Drop یا Ctrl+V</div></section>
 <div class="source-actions" aria-label="روش‌های ورود تصویر"><button id="cameraOpen" class="btn ai" type="button">📷 باز کردن دوربین</button><button id="cameraFallbackOpen" class="btn ghost" type="button">📸 دوربین گوشی / انتخاب عکس</button><input id="cameraFile" type="file" accept="image/*" capture="environment" hidden></div>
 <section id="cameraPanel" class="camera-panel hidden" aria-label="دوربین"><div class="camera-head"><b>📷 ثبت تصویر</b><span id="cameraStatus" role="status" aria-live="polite">برای شروع، اجازهٔ دسترسی دوربین را بدهید.</span></div><video id="cameraVideo" autoplay playsinline muted></video><div class="actions"><button id="cameraCapture" class="btn ok" type="button" disabled>ثبت عکس</button><button id="cameraFlip" class="btn ghost" type="button">تعویض دوربین جلو / عقب</button><button id="cameraClose" class="btn ghost" type="button">بستن دوربین</button></div></section>
@@ -1185,5 +1185,161 @@ body{background-image:radial-gradient(900px 420px at 90% -8%,rgba(80,120,255,.14
 })();
 </script>
 
+
+<style id="tizandish-theme-complete">
+/* Tizandish 3.3.5 theme-complete: unified whole-page color tokens */
+html[data-theme="dark"]{
+ color-scheme:dark;
+ --bg:#080b12;--panel:#111827;--panel2:#192235;--line:#2a3850;
+ --txt:#f3f6ff;--muted:#a5b2c8;--accent:#668cff;--ai:#9a78ff;
+ --ok:#45d6a2;--bad:#ff727e;--warm:#ffbd69;
+ background:var(--bg)!important;color:var(--txt)!important;
+}
+html[data-theme="dark"],html[data-theme="dark"] body{
+ background-color:var(--bg)!important;color:var(--txt)!important;
+}
+html[data-theme="dark"] body:before{opacity:1}
+html[data-theme="light"]{
+ color-scheme:light;
+ --bg:#f7f9fd;--panel:#fff;--panel2:#edf2f9;--line:#d5dfed;
+ --txt:#1d2a3d;--muted:#63748b;--accent:#4779e8;--ai:#7958d8;
+ --ok:#14835e;--bad:#c8444d;--warm:#b87823;
+ background:var(--bg)!important;color:var(--txt)!important;
+ scrollbar-color:#b8c8df #edf2f9;
+}
+html[data-theme="light"],html[data-theme="light"] body{
+ background:var(--bg)!important;color:var(--txt)!important;
+}
+html[data-theme="light"] body:before{
+ background:radial-gradient(900px 440px at 50% -8%,rgba(119,153,255,.16),transparent 68%),
+ radial-gradient(600px 400px at 8% 32%,rgba(36,174,148,.07),transparent 70%),
+ linear-gradient(160deg,#fff,#f0f5fc 52%,#f8fafd)!important;
+}
+html[data-theme="light"] .head{
+ background:linear-gradient(135deg,rgba(255,255,255,.96),rgba(239,245,253,.95))!important;
+ border-color:#d8e3f1!important;box-shadow:0 14px 38px rgba(43,65,110,.09)!important;
+}
+html[data-theme="light"] .head:after{background:radial-gradient(ellipse,rgba(89,134,255,.10),transparent 70%)}
+html[data-theme="light"] .head p{color:var(--muted)!important}
+html[data-theme="light"] .feature-strip span{background:#fff!important;color:#52657f!important;border-color:#dbe5f2!important}
+html[data-theme="light"] .card,
+html[data-theme="light"] .camera-panel,
+html[data-theme="light"] .batch-panel,
+html[data-theme="light"] .editor-shell,
+html[data-theme="light"] .tz-info,
+html[data-theme="light"] .tz-shell,
+html[data-theme="light"] .tz-card{
+ background:#fff!important;color:var(--txt)!important;border-color:var(--line)!important;
+ box-shadow:0 9px 28px rgba(43,65,110,.055)!important;
+}
+html[data-theme="light"] .drop{
+ background:linear-gradient(145deg,#fff,#f2f6fc)!important;color:var(--txt)!important;
+ border-color:#a9c0e8!important;
+}
+html[data-theme="light"] .drop .t,
+html[data-theme="light"] .geom-intro b,
+html[data-theme="light"] .view-intro b,
+html[data-theme="light"] .mode-title,
+html[data-theme="light"] .tz-title,
+html[data-theme="light"] .tz-card h3{color:var(--txt)!important}
+html[data-theme="light"] .drop .s,
+html[data-theme="light"] .geom-intro span,
+html[data-theme="light"] .view-intro span,
+html[data-theme="light"] .mode-desc,
+html[data-theme="light"] .info,
+html[data-theme="light"] .note,
+html[data-theme="light"] .view-note,
+html[data-theme="light"] .magic-note,
+html[data-theme="light"] .geom-hint,
+html[data-theme="light"] .tz-subtitle,
+html[data-theme="light"] .tz-card p{color:var(--muted)!important}
+html[data-theme="light"] .mode,
+html[data-theme="light"] .chip,
+html[data-theme="light"] .switch,
+html[data-theme="light"] .field input[type=number],
+html[data-theme="light"] .field select,
+html[data-theme="light"] .view-field select,
+html[data-theme="light"] .view-field input[type=url],
+html[data-theme="light"] .view-field textarea,
+html[data-theme="light"] .prompt-assist textarea,
+html[data-theme="light"] input:not([type=checkbox]):not([type=range]):not([type=file]),
+html[data-theme="light"] textarea,
+html[data-theme="light"] .compare-control,
+html[data-theme="light"] .panel-toggle{
+ background:#f3f7fc!important;color:#26364e!important;border-color:#d5dfed!important;
+}
+html[data-theme="light"] input::placeholder,
+html[data-theme="light"] textarea::placeholder{color:#8796aa!important}
+html[data-theme="light"] .mode.active{background:#e8f0ff!important;border-color:#85a9ed!important}
+html[data-theme="light"] .mode.ai.active{background:#f0eaff!important;border-color:#b3a1ed!important}
+html[data-theme="light"] .btn.ghost{background:#fff!important;color:#52657f!important;border-color:#d5dfed!important}
+html[data-theme="light"] .btn.ghost.active{background:#e8f0ff!important;color:#315b9c!important}
+html[data-theme="light"] .status,
+html[data-theme="light"] .magic-status,
+html[data-theme="light"] .view-status{background:#f3f7fc!important;color:#5d7089!important;border-color:#d7e2ef!important}
+html[data-theme="light"] .status.ok,
+html[data-theme="light"] .view-status.ok{background:#eaf8f1!important;color:#18764e!important;border-color:#bce8d1!important}
+html[data-theme="light"] .status.error,
+html[data-theme="light"] .view-status.error{background:#fff0f0!important;color:#b33232!important;border-color:#f0c4c4!important}
+html[data-theme="light"] .status.busy,
+html[data-theme="light"] .view-status.busy{background:#eef5ff!important;color:#315e9c!important;border-color:#c9ddf9!important}
+html[data-theme="light"] .progress{background:#e4ebf5!important}
+html[data-theme="light"] .box,
+html[data-theme="light"] .crop-stage,
+html[data-theme="light"] .crop-frame,
+html[data-theme="light"] .compare-stage{background-color:#edf2f9!important;border-color:#d5dfed!important}
+html[data-theme="light"] .box{background-image:linear-gradient(45deg,#dbe2ed 25%,transparent 25%,transparent 75%,#dbe2ed 75%),linear-gradient(45deg,#dbe2ed 25%,#f2f5f9 25%,#f2f5f9 75%,#dbe2ed 75%)!important}
+html[data-theme="light"] .crop-stage{background:#f0f4fa!important}
+html[data-theme="light"] .test-report,
+html[data-theme="light"] pre,
+html[data-theme="light"] .code-panel,
+html[data-theme="light"] .view-contract{background:#f4f7fc!important;color:#42536d!important;border-color:#d5dfed!important}
+html[data-theme="light"] .compare-tag{background:#17243dcc!important;color:#fff!important}
+html[data-theme="light"] .tz-info{background:transparent!important;box-shadow:none!important}
+html[data-theme="light"] .tz-hero,
+html[data-theme="light"] .tz-bottom,
+html[data-theme="light"] .tz-payment{background:transparent!important;color:var(--txt)!important}
+html[data-theme="light"] .tz-chip{background:#f1f5fb!important;color:#52657f!important;border-color:#dbe5f2!important}
+html[data-theme="light"] .tz-support{background:#f5fbf8!important}
+html[data-theme="light"] .tz-payment-caption{color:#667d6e!important}
+html[data-theme="light"] .tz-support-purpose{color:#467560!important}
+html[data-theme="light"] .theme-toggle{background:#fff!important;color:#42536d!important;border-color:#d5dfed!important}
+html[data-theme="dark"] .theme-toggle{background:rgba(17,25,39,.82)!important;color:#d4e2fb!important;border-color:#35445e!important}
+html[data-theme="light"] .tz-card-number{color:#f0ca3c!important}
+html[data-theme="light"] .tz-bank-name{color:#f2f2f2!important}
+html[data-theme="light"] .tz-lion-mark{color:#d7b63e!important}
+html[data-theme="light"] .tz-bank-card{color:#f2f2f2!important}
+html[data-theme="light"] .tz-bank-card *{color:inherit}
+html[data-theme="light"] .tz-bank-card .tz-card-number{color:#f0ca3c!important}
+html[data-theme="light"] .val{background:#edf3ff!important;color:#4168a8!important;border-color:#d2e0fa!important}
+html[data-theme="light"] .prompt-assist{background:linear-gradient(140deg,#f2efff,#f5f8fc)!important;border-color:#ddd5f5!important}
+html[data-theme="light"] #editor>.card .modes{background:#f1f5fb!important;border-color:#dbe4f0!important}
+html[data-theme="light"] #editor>.card .modes .mode{color:#3d526f!important}
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .camera-panel,
+html[data-theme="dark"] .batch-panel,
+html[data-theme="dark"] .editor-shell{background:linear-gradient(150deg,rgba(20,28,43,.96),rgba(14,19,29,.96))!important;color:var(--txt)!important;border-color:rgba(124,151,196,.2)!important}
+html[data-theme="dark"] .drop{background:linear-gradient(145deg,rgba(20,30,49,.92),rgba(14,19,30,.92))!important;color:var(--txt)!important}
+html[data-theme="dark"] .mode,
+html[data-theme="dark"] .chip,
+html[data-theme="dark"] .switch,
+html[data-theme="dark"] input:not([type=checkbox]):not([type=range]):not([type=file]),
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] select{background:var(--panel2)!important;color:var(--txt)!important;border-color:var(--line)!important}
+html[data-theme="dark"] .tz-info,
+html[data-theme="dark"] .tz-shell,
+html[data-theme="dark"] .tz-card{background:transparent!important;color:var(--txt)!important;box-shadow:none!important}
+html[data-theme="dark"] .tz-chip{background:rgba(17,25,39,.55)!important;color:#c4d2e9!important;border-color:rgba(120,153,207,.18)!important}
+html[data-theme="dark"] .tz-support{background:linear-gradient(140deg,rgba(17,26,40,.6),rgba(13,20,31,.5))!important}
+html[data-theme="dark"] .tz-bank-card{color:#f2f2f2!important}
+html[data-theme="dark"] .tz-bank-card .tz-card-number{color:#f0ca3c!important}
+html[data-theme="dark"] .theme-toggle{background:rgba(17,25,39,.82)!important;color:#d4e2fb!important}
+html[data-theme="light"] .theme-toggle:focus-visible,
+html[data-theme="dark"] .theme-toggle:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+html,body,.wrap,.head,.card,.camera-panel,.batch-panel,.editor-shell,.drop,.tz-info{
+ transition:background-color .22s ease,color .22s ease,border-color .22s ease,box-shadow .22s ease;
+}
+@media(prefers-reduced-motion:reduce){html,body,.wrap,.head,.card,.camera-panel,.batch-panel,.editor-shell,.drop,.tz-info{transition:none!important}}
+</style>
 </body>
 </html>
