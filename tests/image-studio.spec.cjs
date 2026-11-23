@@ -115,8 +115,8 @@ test('before/after comparison renders after processing and slider updates', asyn
   expect(result.outputWidth).toBeGreaterThan(0);
   expect(result.outputHeight).toBeGreaterThan(0);
   expect(result.hasResult).toBe(true);
-  await page.locator('#compareSlider').fill('73');
-  await expect(page.locator('#compareStage')).toHaveCSS('--compare', '73%');
+  await page.locator('#compareSlider').evaluate(el => { el.value = '73'; el.dispatchEvent(new Event('input', { bubbles: true })); });
+  await expect.poll(() => page.locator('#compareStage').evaluate(el => el.style.getPropertyValue('--compare'))).toBe('73%');
   await expect(page.locator('#compareValue')).toContainText('۷۳');
 });
 
