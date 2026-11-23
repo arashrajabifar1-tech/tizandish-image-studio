@@ -33,7 +33,7 @@ async function makePng(page, width, height, draw) {
 test('internal regression suite passes and reports the current release', async ({ page }) => {
   await openTestBuild(page);
   const report = await page.locator('#testReport').textContent();
-  expect(report).toContain('Self-test v3.3.0');
+  expect(report).toContain('Self-test v3.3.6');
   expect(report).toContain('حفظ شفافیت خروجی');
   expect(report).toContain('حفظ گوشهٔ انتهایی پس از کوچک‌سازی');
   expect(report).toContain('انتقال خودکار GPU به CPU');
@@ -91,6 +91,79 @@ test('AI resize keeps content from the far bottom-right edge', async ({ page }) 
   expect(result.pixel[0]).toBeGreaterThan(220);
   expect(result.pixel[2]).toBeGreaterThan(220);
   expect(result.pixel[1]).toBeLessThan(35);
+});
+
+
+test('before/after comparison renders after processing and slider updates', async ({ page }) => {
+  await openTestBuild(page);
+  const fixture = await makePng(page, 320, 240, 'subject');
+  const result = await page.evaluate(async ({ bytes }) => {
+    const api = window.__BG_API__;
+    api.setMode('classic');
+    await api.loadFile(new File([new Uint8Array(bytes)], 'compare.png', { type: 'image/png' }));
+    api.classicProcess();
+    return {
+      ready: document.querySelector('#compareStage').classList.contains('ready'),
+      disabled: document.querySelector('#compareSlider').disabled,
+      outputWidth: document.querySelector('#outCanvas').width,
+      outputHeight: document.querySelector('#outCanvas').height,
+      hasResult: api.getState().hasResult
+    };
+  }, fixture);
+  expect(result.ready).toBe(true);
+  expect(result.disabled).toBe(false);
+  expect(result.outputWidth).toBeGreaterThan(0);
+  expect(result.outputHeight).toBeGreaterThan(0);
+  expect(result.hasResult).toBe(true);
+  await page.locator('#compareSlider').fill('73');
+  await expect(page.locator('#compareStage')).toHaveCSS('--compare', '73%');
+  await expect(page.locator('#compareValue')).toContainText('۷۳');
+});
+
+test('multi-point lasso is smooth, has usable zoom-out lens, and crops successfully', async ({ page }) => {
+  await openTestBuild(page);
+  const fixture = await makePng(page, 320, 240, 'subject');
+  await page.evaluate(async ({ bytes }) => {
+    await window.__BG_API__.loadFile(new File([new Uint8Array(bytes)], 'lasso.png', { type: 'image/png' }));
+  }, fixture);
+  await page.locator('#cropModeLasso').click();
+  const frame = await page.locator('#cropOverlay').boundingBox();
+  expect(frame).not.toBeNull();
+  const path = [
+    [0.25, 0.22], [0.70, 0.20], [0.78, 0.48],
+    [0.68, 0.75], [0.48, 0.86], [0.28, 0.70], [0.20, 0.44]
+  ].map(([x, y]) => [frame.x + frame.width * x, frame.y + frame.height * y]);
+  await page.mouse.move(path[0][0], path[0][1]);
+  await page.mouse.down();
+  for (const [x, y] of path.slice(1)) await page.mouse.move(x, y, { steps: 3 });
+  await page.mouse.up();
+  const geometry = await page.evaluate(() => window.__BG_API__.getGeometryState());
+  expect(geometry.mode).toBe('lasso');
+  expect(geometry.points.length).toBeGreaterThan(4);
+  expect(geometry.lensZoom).toBeLessThan(2.5);
+  expect(geometry.lensSize).toBe(156);
+  await expect(page.locator('#applyCrop')).toBeEnabled();
+  await page.locator('#applyCrop').click();
+  await expect(page.locator('#geometryStatus')).toContainText('برش دوربری آزاد چندنقطه‌ای اعمال شد.');
+  expect(await page.locator('#cropModeNone').getAttribute('class')).toContain('active');
+});
+
+test('perspective handles are touch-sized and drag moves a corner', async ({ page }) => {
+  await openTestBuild(page);
+  const fixture = await makePng(page, 320, 240, 'subject');
+  await page.evaluate(async ({ bytes }) => {
+    await window.__BG_API__.loadFile(new File([new Uint8Array(bytes)], 'perspective.png', { type: 'image/png' }));
+  }, fixture);
+  await page.locator('#cropModePerspective').click();
+  const before = await page.evaluate(() => window.__BG_API__.getGeometryState().points[0]);
+  const handle = await page.locator('#cropOverlay circle[data-handle="TL"]').boundingBox();
+  await page.mouse.move(handle.x + handle.width / 2, handle.y + handle.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(handle.x + handle.width / 2 + 18, handle.y + handle.height / 2 + 15, { steps: 4 });
+  await page.mouse.up();
+  const after = await page.evaluate(() => window.__BG_API__.getGeometryState().points[0]);
+  expect(after.x).toBeGreaterThan(before.x + 5);
+  expect(after.y).toBeGreaterThan(before.y + 5);
 });
 
 test('transparent, white and custom background exports behave correctly', async ({ page }) => {
