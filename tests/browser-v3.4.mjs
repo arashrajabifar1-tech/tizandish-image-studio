@@ -6,6 +6,10 @@ import path from 'node:path';
 const root = process.cwd();
 const server = http.createServer((req, res) => {
   const pathname = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);
+  if (pathname === '/api/viewpoint' && req.method === 'GET') {
+    res.writeHead(200, { 'content-type': 'application/json' });
+    return res.end(JSON.stringify({ ok: true, service: 'test', configured: false }));
+  }
   const file = pathname === '/' ? 'index.html' : pathname.slice(1);
   const full = path.resolve(root, file);
   if (!full.startsWith(root + path.sep) || !fs.existsSync(full) || fs.statSync(full).isDirectory()) {
@@ -22,10 +26,12 @@ try {
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.goto('http://127.0.0.1:4173/?selftest=1', { waitUntil: 'domcontentloaded' });
-  await page.waitForFunction(() => !!window.__BG_API__, null, { timeout: 30000 });
+  await page.waitForFunction(() => !!window.__BG_API__ && !!window.__BG_VIEWPOINT__, null, { timeout: 30000 });
+  await page.waitForFunction(() => window.__BG_VIEWPOINT__.getApiState().configured === false, null, { timeout: 10000 });
   const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="240" height="180"><rect width="240" height="180" fill="#fff"/><rect x="70" y="35" width="100" height="110" rx="12" fill="#1684c7"/></svg>';
   await page.locator('#file').setInputFiles({ name: 'regression.svg', mimeType: 'image/svg+xml', buffer: Buffer.from(svg) });
   await page.waitForFunction(() => window.__BG_API__.getState().sourceW === 240, null, { timeout: 20000 });
+  if (!(await page.locator('#viewSendAI').isDisabled())) throw new Error('Image generation control must stay disabled while its API is not configured.');
   await page.evaluate(() => window.__BG_API__.setMode('classic'));
   await page.locator('#process').click();
   await page.waitForFunction(() => window.__BG_API__.getState().hasResult === true, null, { timeout: 20000 });
@@ -62,7 +68,7 @@ try {
   });
   if (crop !== 100) throw new Error('Crop rectangle helper returned an unexpected width.');
   if (errors.length) throw new Error('Browser runtime errors: ' + errors.join(' | '));
-  console.log('PASS mobile browser: image import, classic processing, before/after slider, simulated mobile touch crop drag/apply, crop geometry; no page errors');
+  console.log('PASS mobile browser: image import, classic processing, before/after slider, simulated mobile touch crop drag/apply, crop geometry, safe unconfigured-API state; no page errors');
 } finally {
   await browser.close();
   await new Promise(resolve => server.close(resolve));
