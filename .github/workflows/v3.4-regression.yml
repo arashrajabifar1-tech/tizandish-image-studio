@@ -1,0 +1,25 @@
+name: v3.4.0 regression suite
+on:
+  pull_request:
+    branches: [main, perf/ai-webgpu-cache-fallback]
+  push:
+    branches: [feat/v3.4.0-free-ai-api-full]
+  workflow_dispatch:
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: API unit tests
+        run: node --test tests/viewpoint-api.test.cjs
+      - name: HTML inline script syntax
+        run: node tests/check-inline-script.cjs
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Mobile browser regression
+        run: node tests/browser-v3.4.mjs
