@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/viewpoint.js": {
+      "maxDuration": 60
+    }
+  }
+}
