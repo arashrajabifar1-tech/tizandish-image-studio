@@ -44,4 +44,35 @@ test('creates multipart request with the selected model and source image', () =>
   assert.equal(form.get('model'), 'publisher/test-image-edit');
   assert.equal(form.get('prompt'), valid.prompt);
   assert.equal(form.get('image').type, 'image/png');
+  assert.equal(form.get('response_format'), 'b64_json');
+});
+
+test('parses standard Pollinations JSON b64_json image responses', async () => {
+  const response = new Response(JSON.stringify({ data: [{ b64_json: valid.imageBase64 }] }), {
+    headers: { 'content-type': 'application/json' }
+  });
+  const image = await api.parseProviderImage(response);
+  assert.equal(image.mimeType, 'image/png');
+  assert.deepEqual([...image.bytes.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10]);
+});
+
+test('parses valid raw image responses', async () => {
+  const bytes = Buffer.from(valid.imageBase64, 'base64');
+  const response = new Response(bytes, { headers: { 'content-type': 'image/png' } });
+  const image = await api.parseProviderImage(response);
+  assert.equal(image.mimeType, 'image/png');
+  assert.deepEqual(image.bytes, bytes);
+});
+
+test('rejects JSON provider responses without image data', async () => {
+  const response = new Response(JSON.stringify({ data: [{ revised_prompt: 'done' }] }), {
+    headers: { 'content-type': 'application/json' }
+  });
+  await assert.rejects(() => api.parseProviderImage(response), /b64_json/);
+});
+
+test('applies a per-instance request rate limit', () => {
+  const req = { headers: { 'x-real-ip': '198.51.100.77' }, socket: {} };
+  for (let i = 0; i < 5; i++) assert.equal(api.allowRequest(req), true);
+  assert.equal(api.allowRequest(req), false);
 });
