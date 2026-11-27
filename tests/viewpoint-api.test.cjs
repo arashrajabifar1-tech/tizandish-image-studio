@@ -167,3 +167,33 @@ test('rejects provider output that exceeds the Vercel response payload budget', 
   const response = new Response(bytes, { headers: { 'content-type': 'image/png' } });
   await assert.rejects(() => api.parseProviderImage(response), /بایت‌های پاسخ/);
 });
+
+test('rejects POST requests that omit a browser Origin header', async (t) => {
+  const oldKey = process.env.POLLINATIONS_API_KEY;
+  const oldModel = process.env.POLLINATIONS_IMAGE_MODEL;
+  const oldFetch = global.fetch;
+  delete process.env.POLLINATIONS_API_KEY;
+  delete process.env.POLLINATIONS_IMAGE_MODEL;
+  global.fetch = async () => { throw new Error('Provider must not be called'); };
+  t.after(() => {
+    global.fetch = oldFetch;
+    if (oldKey === undefined) delete process.env.POLLINATIONS_API_KEY;
+    else process.env.POLLINATIONS_API_KEY = oldKey;
+    if (oldModel === undefined) delete process.env.POLLINATIONS_IMAGE_MODEL;
+    else process.env.POLLINATIONS_IMAGE_MODEL = oldModel;
+  });
+  const response = {
+    statusCode: 0,
+    headers: {},
+    setHeader(name, value) { this.headers[name.toLowerCase()] = value; },
+    end(body) { this.body = body; }
+  };
+  await api({
+    method: 'POST',
+    headers: { host: 'studio.example.test', 'x-real-ip': '198.51.100.93' },
+    body: valid,
+    socket: {}
+  }, response);
+  assert.equal(response.statusCode, 403);
+  assert.match(JSON.parse(response.body).error, /مبدأ/);
+});
