@@ -83,3 +83,80 @@ test('rejects a valid base64 body with a mismatched file signature', () => {
     imageBase64: Buffer.from('not-an-image').toString('base64')
   }), /امضای فایل/);
 });
+
+test('runs the server handler end-to-end with a mocked Pollinations JSON image response', async (t) => {
+  const oldKey = process.env.POLLINATIONS_API_KEY;
+  const oldModel = process.env.POLLINATIONS_IMAGE_MODEL;
+  const oldFetch = global.fetch;
+  process.env.POLLINATIONS_API_KEY = 'test-only-not-a-real-secret';
+  process.env.POLLINATIONS_IMAGE_MODEL = 'publisher/test-image-edit';
+  let requestObserved = false;
+  global.fetch = async (url, options) => {
+    requestObserved = true;
+    assert.equal(url, 'https://gen.pollinations.ai/v1/images/edits');
+    assert.equal(options.headers.Authorization, 'Bearer test-only-not-a-real-secret');
+    assert.equal(options.body.get('model'), 'publisher/test-image-edit');
+    assert.equal(options.body.get('response_format'), 'b64_json');
+    return new Response(JSON.stringify({ data: [{ b64_json: valid.imageBase64 }] }), {
+      headers: { 'content-type': 'application/json' }
+    });
+  };
+  t.after(() => {
+    global.fetch = oldFetch;
+    if (oldKey === undefined) delete process.env.POLLINATIONS_API_KEY;
+    else process.env.POLLINATIONS_API_KEY = oldKey;
+    if (oldModel === undefined) delete process.env.POLLINATIONS_IMAGE_MODEL;
+    else process.env.POLLINATIONS_IMAGE_MODEL = oldModel;
+  });
+  const response = {
+    statusCode: 0,
+    headers: {},
+    setHeader(name, value) { this.headers[name.toLowerCase()] = value; },
+    end(body) { this.body = body; }
+  };
+  await api({
+    method: 'POST',
+    headers: {
+      host: 'studio.example.test',
+      origin: 'https://studio.example.test',
+      'x-real-ip': '198.51.100.91'
+    },
+    body: valid,
+    socket: {}
+  }, response);
+  assert.equal(requestObserved, true);
+  assert.equal(response.statusCode, 200);
+  assert.equal(response.headers['content-type'], 'image/png');
+  assert.equal(response.headers['x-tizandish-provider'], 'pollinations');
+  assert.deepEqual([...response.body.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10]);
+});
+
+test('returns a clear not-configured response without calling the provider', async (t) => {
+  const oldKey = process.env.POLLINATIONS_API_KEY;
+  const oldModel = process.env.POLLINATIONS_IMAGE_MODEL;
+  const oldFetch = global.fetch;
+  delete process.env.POLLINATIONS_API_KEY;
+  delete process.env.POLLINATIONS_IMAGE_MODEL;
+  global.fetch = async () => { throw new Error('Provider must not be called when not configured'); };
+  t.after(() => {
+    global.fetch = oldFetch;
+    if (oldKey === undefined) delete process.env.POLLINATIONS_API_KEY;
+    else process.env.POLLINATIONS_API_KEY = oldKey;
+    if (oldModel === undefined) delete process.env.POLLINATIONS_IMAGE_MODEL;
+    else process.env.POLLINATIONS_IMAGE_MODEL = oldModel;
+  });
+  const response = {
+    statusCode: 0,
+    headers: {},
+    setHeader(name, value) { this.headers[name.toLowerCase()] = value; },
+    end(body) { this.body = body; }
+  };
+  await api({
+    method: 'POST',
+    headers: { host: 'studio.example.test', origin: 'https://studio.example.test', 'x-real-ip': '198.51.100.92' },
+    body: valid,
+    socket: {}
+  }, response);
+  assert.equal(response.statusCode, 503);
+  assert.match(JSON.parse(response.body).error, /POLLINATIONS_API_KEY/);
+});
