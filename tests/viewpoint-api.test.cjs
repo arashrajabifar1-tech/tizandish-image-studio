@@ -197,3 +197,14 @@ test('rejects POST requests that omit a browser Origin header', async (t) => {
   assert.equal(response.statusCode, 403);
   assert.match(JSON.parse(response.body).error, /مبدأ/);
 });
+
+test('accepts a JPEG image signature and preserves the media type', () => {
+  const jpeg = Buffer.from([0xff, 0xd8, 0xff, 0xd9]);
+  const result = api.validatePayload({
+    ...valid,
+    imageBase64: jpeg.toString('base64'),
+    mimeType: 'image/jpeg'
+  });
+  assert.equal(result.mimeType, 'image/jpeg');
+  assert.deepEqual(result.bytes, jpeg);
+});
