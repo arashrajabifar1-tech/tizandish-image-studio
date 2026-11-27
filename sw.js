@@ -28,7 +28,7 @@ self.addEventListener('fetch',event=>{
   if(cached)return cached;
   const response=await fetch(request);
   if(response.ok||response.type==='opaque'){
-   try{event.waitUntil(cache.put(request,response.clone()))}catch(error){console.warn('AI model cache write skipped:',error)}
+   try{await cache.put(request,response.clone())}catch(error){console.warn('AI model cache write skipped:',error)}
   }
   return response;
  })().catch(async()=>{
