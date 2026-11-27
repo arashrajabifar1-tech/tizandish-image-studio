@@ -160,3 +160,10 @@ test('returns a clear not-configured response without calling the provider', asy
   assert.equal(response.statusCode, 503);
   assert.match(JSON.parse(response.body).error, /POLLINATIONS_API_KEY/);
 });
+
+test('rejects provider output that exceeds the Vercel response payload budget', async () => {
+  const bytes = Buffer.alloc(4 * 1024 * 1024 + 1);
+  Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]).copy(bytes);
+  const response = new Response(bytes, { headers: { 'content-type': 'image/png' } });
+  await assert.rejects(() => api.parseProviderImage(response), /بایت‌های پاسخ/);
+});
