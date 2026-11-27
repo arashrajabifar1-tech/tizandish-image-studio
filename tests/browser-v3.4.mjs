@@ -33,13 +33,35 @@ try {
   await page.locator('#compareSlider').evaluate(el => { el.value = '72'; el.dispatchEvent(new Event('input', { bubbles: true })); });
   const compare = await page.locator('#compareStage').evaluate(el => getComputedStyle(el).getPropertyValue('--compare').trim());
   if (compare !== '72%') throw new Error('Before/after slider did not update the comparison view.');
+  // Simulate a touch-pointer drag on the real crop handles in the mobile viewport.
+  await page.locator('#cropModeFree').click();
+  const start = await page.locator('#cropOverlay').evaluate(svg => {
+    const handle = svg.querySelector('circle[data-handle="TL"]');
+    if (!handle) throw new Error('Top-left crop handle was not rendered.');
+    const r = handle.getBoundingClientRect();
+    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  });
+  await page.evaluate(({ x, y }) => {
+    const svg = document.querySelector('#cropOverlay');
+    const handle = svg.querySelector('circle[data-handle="TL"]');
+    const opts = (clientX, clientY) => ({ bubbles: true, cancelable: true, pointerId: 7, pointerType: 'touch', isPrimary: true, clientX, clientY });
+    handle.dispatchEvent(new PointerEvent('pointerdown', opts(x, y)));
+    svg.dispatchEvent(new PointerEvent('pointermove', opts(x + 24, y + 18)));
+    svg.dispatchEvent(new PointerEvent('pointerup', opts(x + 24, y + 18)));
+  }, start);
+  const geometry = await page.evaluate(() => window.__BG_API__.getGeometryState());
+  if (Math.abs(geometry.points[0].x - 14.4) < 1 || Math.abs(geometry.points[0].y - 10.8) < 1) {
+    throw new Error('Touch-pointer drag did not move the crop handle as expected.');
+  }
+  await page.locator('#applyCrop').click();
+  await page.waitForFunction(() => window.__BG_API__.getState().sourceW < 240, null, { timeout: 20000 });
   const crop = await page.evaluate(() => {
     const c = document.createElement('canvas'); c.width = 240; c.height = 180;
     return window.__BG_API__.cropCanvasRect(c, { left: 20, top: 10, right: 120, bottom: 90 }).width;
   });
   if (crop !== 100) throw new Error('Crop rectangle helper returned an unexpected width.');
   if (errors.length) throw new Error('Browser runtime errors: ' + errors.join(' | '));
-  console.log('PASS mobile browser: image import, classic processing, before/after slider, crop geometry; no page errors');
+  console.log('PASS mobile browser: image import, classic processing, before/after slider, simulated mobile touch crop drag/apply, crop geometry; no page errors');
 } finally {
   await browser.close();
   await new Promise(resolve => server.close(resolve));
