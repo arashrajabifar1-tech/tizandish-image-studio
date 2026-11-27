@@ -21,7 +21,7 @@ try {
   const page = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
-  await page.goto('http://127.0.0.1:4173', { waitUntil: 'domcontentloaded' });
+  await page.goto('http://127.0.0.1:4173/?selftest=1', { waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => !!window.__BG_API__, null, { timeout: 30000 });
   const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="240" height="180"><rect width="240" height="180" fill="#fff"/><rect x="70" y="35" width="100" height="110" rx="12" fill="#1684c7"/></svg>';
   await page.locator('#file').setInputFiles({ name: 'regression.svg', mimeType: 'image/svg+xml', buffer: Buffer.from(svg) });
