@@ -35,6 +35,7 @@ try {
   if (compare !== '72%') throw new Error('Before/after slider did not update the comparison view.');
   // Simulate a touch-pointer drag on the real crop handles in the mobile viewport.
   await page.locator('#cropModeFree').click();
+  const beforeDrag = await page.evaluate(() => window.__BG_API__.getGeometryState().points[0]);
   const start = await page.locator('#cropOverlay').evaluate(svg => {
     const handle = svg.querySelector('circle[data-handle="TL"]');
     if (!handle) throw new Error('Top-left crop handle was not rendered.');
@@ -50,7 +51,7 @@ try {
     svg.dispatchEvent(new PointerEvent('pointerup', opts(x + 24, y + 18)));
   }, start);
   const geometry = await page.evaluate(() => window.__BG_API__.getGeometryState());
-  if (Math.abs(geometry.points[0].x - 14.4) < 1 || Math.abs(geometry.points[0].y - 10.8) < 1) {
+  if (Math.abs(geometry.points[0].x - beforeDrag.x) < 1 || Math.abs(geometry.points[0].y - beforeDrag.y) < 1) {
     throw new Error('Touch-pointer drag did not move the crop handle as expected.');
   }
   await page.locator('#applyCrop').click();
