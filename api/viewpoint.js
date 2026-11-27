@@ -23,6 +23,12 @@ function validatePayload(body) {
   if (!prompt || prompt.length > MAX_PROMPT_CHARS) throw new Error('پرامپت خالی یا بیش از حد طولانی است.');
   const bytes = Buffer.from(imageBase64, 'base64');
   if (!bytes.length || bytes.length > MAX_IMAGE_BYTES) throw new Error('حجم تصویر نامعتبر است.');
+  const signatureOk = mimeType === 'image/png'
+    ? bytes.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))
+    : mimeType === 'image/jpeg'
+      ? bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff
+      : bytes.length >= 12 && bytes.toString('ascii', 0, 4) === 'RIFF' && bytes.toString('ascii', 8, 12) === 'WEBP';
+  if (!signatureOk) throw new Error('امضای فایل با نوع تصویر اعلام‌شده مطابقت ندارد.');
   return {
     bytes,
     mimeType,
