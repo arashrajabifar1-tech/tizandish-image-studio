@@ -3,7 +3,7 @@
 const MAX_IMAGE_BYTES = 3 * 1024 * 1024;
 const MAX_PROMPT_CHARS = 6000;
 const UPSTREAM_URL = 'https://gen.pollinations.ai/v1/images/edits';
-const MAX_OUTPUT_BYTES = 18 * 1024 * 1024;
+const MAX_OUTPUT_BYTES = 4 * 1024 * 1024;
 const RATE_WINDOW_MS = 60 * 1000;
 const RATE_LIMIT = 5;
 const rateBuckets = new Map();
@@ -135,7 +135,7 @@ async function handler(req, res) {
   try {
     const payload = validatePayload(req.body);
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 110000);
+    const timer = setTimeout(() => controller.abort(), 55000);
     let upstream;
     try {
       upstream = await fetch(UPSTREAM_URL, {
