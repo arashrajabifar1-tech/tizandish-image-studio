@@ -31,6 +31,13 @@ try {
   const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="240" height="180"><rect width="240" height="180" fill="#fff"/><rect x="70" y="35" width="100" height="110" rx="12" fill="#1684c7"/></svg>';
   await page.locator('#file').setInputFiles({ name: 'regression.svg', mimeType: 'image/svg+xml', buffer: Buffer.from(svg) });
   await page.waitForFunction(() => window.__BG_API__.getState().sourceW === 240, null, { timeout: 20000 });
+  const viewpointUpload = await page.evaluate(async () => {
+    const blob = await window.__BG_VIEWPOINT__.viewpointInputBlob();
+    return { type: blob.type, size: blob.size };
+  });
+  if (viewpointUpload.type !== 'image/jpeg' || viewpointUpload.size > 2.75 * 1024 * 1024) {
+    throw new Error('Viewpoint source was not automatically compressed to the API upload budget.');
+  }
   if (!(await page.locator('#viewSendAI').isDisabled())) throw new Error('Image generation control must stay disabled while its API is not configured.');
   await page.evaluate(() => window.__BG_API__.setMode('classic'));
   await page.locator('#process').click();
@@ -68,7 +75,7 @@ try {
   });
   if (crop !== 100) throw new Error('Crop rectangle helper returned an unexpected width.');
   if (errors.length) throw new Error('Browser runtime errors: ' + errors.join(' | '));
-  console.log('PASS mobile browser: image import, classic processing, before/after slider, simulated mobile touch crop drag/apply, crop geometry, safe unconfigured-API state; no page errors');
+  console.log('PASS mobile browser: image import, classic processing, before/after slider, simulated mobile touch crop drag/apply, crop geometry, auto-compressed viewpoint payload, safe unconfigured-API state; no page errors');
 } finally {
   await browser.close();
   await new Promise(resolve => server.close(resolve));
