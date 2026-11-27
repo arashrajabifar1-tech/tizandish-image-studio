@@ -76,3 +76,10 @@ test('applies a per-instance request rate limit', () => {
   for (let i = 0; i < 5; i++) assert.equal(api.allowRequest(req), true);
   assert.equal(api.allowRequest(req), false);
 });
+
+test('rejects a valid base64 body with a mismatched file signature', () => {
+  assert.throws(() => api.validatePayload({
+    ...valid,
+    imageBase64: Buffer.from('not-an-image').toString('base64')
+  }), /امضای فایل/);
+});
