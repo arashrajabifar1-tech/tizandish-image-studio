@@ -1,0 +1,21 @@
+name: AI runtime smoke checks
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [perf/ai-webgpu-cache-fallback]
+
+permissions:
+  contents: read
+
+jobs:
+  syntax-and-guards:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Validate inline JavaScript and service worker
+        run: node scripts/check-inline-js.mjs
