@@ -3,6 +3,10 @@
 const MAX_IMAGE_BYTES = 3 * 1024 * 1024;
 const MAX_PROMPT_CHARS = 6000;
 const UPSTREAM_URL = 'https://gen.pollinations.ai/v1/images/edits';
+const MAX_OUTPUT_BYTES = 18 * 1024 * 1024;
+const RATE_WINDOW_MS = 60 * 1000;
+const RATE_LIMIT = 5;
+const rateBuckets = new Map();
 
 function json(res, status, body) {
   res.statusCode = status;
@@ -47,7 +51,61 @@ function buildUpstreamForm(payload, model) {
   form.append('prompt', payload.prompt);
   form.append('model', model);
   form.append('n', '1');
+  form.append('response_format', 'b64_json');
   return form;
+}
+
+function detectImageMime(bytes) {
+  if (bytes.length >= 8 && bytes.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))) return 'image/png';
+  if (bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) return 'image/jpeg';
+  if (bytes.length >= 12 && bytes.toString('ascii', 0, 4) === 'RIFF' && bytes.toString('ascii', 8, 12) === 'WEBP') return 'image/webp';
+  return null;
+}
+
+async function parseProviderImage(response) {
+  const contentType = (response.headers.get('content-type') || '').toLowerCase();
+  if (contentType.startsWith('image/')) {
+    const bytes = Buffer.from(await response.arrayBuffer());
+    const detectedMime = detectImageMime(bytes);
+    if (!bytes.length || bytes.length > MAX_OUTPUT_BYTES || !detectedMime) throw new Error('بایت‌های پاسخ سرویس تصویر معتبر نیستند.');
+    return { bytes, mimeType: detectedMime };
+  }
+
+  if (contentType.includes('application/json') || contentType.includes('+json')) {
+    const payload = await response.json();
+    const encoded = payload?.data?.[0]?.b64_json || payload?.imageBase64 || payload?.b64_json;
+    if (typeof encoded !== 'string' || !/^[A-Za-z0-9+/]+={0,2}$/.test(encoded)) {
+      throw new Error('پاسخ JSON سرویس فاقد data[0].b64_json معتبر است.');
+    }
+    const estimated = Math.floor(encoded.length * 3 / 4);
+    if (!estimated || estimated > MAX_OUTPUT_BYTES) throw new Error('حجم تصویر خروجی بیش از حد مجاز است.');
+    const bytes = Buffer.from(encoded, 'base64');
+    const mimeType = detectImageMime(bytes);
+    if (!mimeType || !bytes.length || bytes.length > MAX_OUTPUT_BYTES) throw new Error('تصویر Base64 بازگشتی معتبر نیست.');
+    return { bytes, mimeType };
+  }
+
+  throw new Error('نوع پاسخ سرویس پشتیبانی نمی‌شود؛ پاسخ باید تصویر یا JSON استاندارد Images API باشد.');
+}
+
+function allowRequest(req) {
+  const rawIp = req.headers['x-real-ip'] || req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'unknown';
+  const ip = String(rawIp).split(',')[0].trim().slice(0, 80) || 'unknown';
+  const now = Date.now();
+  const previous = rateBuckets.get(ip) || [];
+  const recent = previous.filter(timestamp => now - timestamp < RATE_WINDOW_MS);
+  if (recent.length >= RATE_LIMIT) {
+    rateBuckets.set(ip, recent);
+    return false;
+  }
+  recent.push(now);
+  rateBuckets.set(ip, recent);
+  if (rateBuckets.size > 1000) {
+    for (const [key, values] of rateBuckets) {
+      if (!values.some(timestamp => now - timestamp < RATE_WINDOW_MS)) rateBuckets.delete(key);
+    }
+  }
+  return true;
 }
 
 async function handler(req, res) {
@@ -61,6 +119,7 @@ async function handler(req, res) {
     res.setHeader('Allow', 'GET, POST');
     return json(res, 405, { error: 'روش درخواست پشتیبانی نمی‌شود.' });
   }
+  if (!allowRequest(req)) return json(res, 429, { error: 'تعداد درخواست‌ها زیاد است؛ یک دقیقه بعد دوباره تلاش کنید.' });
   const origin = req.headers.origin;
   const host = req.headers.host;
   if (origin && host) {
@@ -94,17 +153,12 @@ async function handler(req, res) {
         detail
       });
     }
-    const contentType = (upstream.headers.get('content-type') || '').toLowerCase();
-    if (contentType.startsWith('image/')) {
-      const bytes = Buffer.from(await upstream.arrayBuffer());
-      if (!bytes.length || bytes.length > 18 * 1024 * 1024) return json(res, 502, { error: 'اندازه تصویر پاسخ نامعتبر است.' });
-      res.statusCode = 200;
-      res.setHeader('Content-Type', contentType);
-      res.setHeader('Cache-Control', 'no-store');
-      res.setHeader('X-Tizandish-Provider', 'pollinations');
-      return res.end(bytes);
-    }
-    return json(res, 502, { error: 'پاسخ ارائه‌دهنده تصویر نبود؛ مدل انتخاب‌شده باید از ویرایش تصویر پشتیبانی کند.' });
+    const image = await parseProviderImage(upstream);
+    res.statusCode = 200;
+    res.setHeader('Content-Type', image.mimeType);
+    res.setHeader('Cache-Control', 'no-store');
+    res.setHeader('X-Tizandish-Provider', 'pollinations');
+    return res.end(image.bytes);
   } catch (error) {
     const status = /حجم|فرمت|Base64|پرامپت|بدنه/.test(error.message) ? 400 : 502;
     return json(res, status, { error: error.name === 'AbortError' ? 'زمان پاسخ ارائه‌دهنده تمام شد.' : error.message || 'خطای ناشناخته API.' });
@@ -113,4 +167,7 @@ async function handler(req, res) {
 
 handler.validatePayload = validatePayload;
 handler.buildUpstreamForm = buildUpstreamForm;
+handler.parseProviderImage = parseProviderImage;
+handler.detectImageMime = detectImageMime;
+handler.allowRequest = allowRequest;
 module.exports = handler;
