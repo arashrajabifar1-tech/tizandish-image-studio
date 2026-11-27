@@ -122,13 +122,12 @@ async function handler(req, res) {
   if (!allowRequest(req)) return json(res, 429, { error: 'تعداد درخواست‌ها زیاد است؛ یک دقیقه بعد دوباره تلاش کنید.' });
   const origin = req.headers.origin;
   const host = req.headers.host;
-  if (origin && host) {
-    try {
-      const parsed = new URL(origin);
-      const allow = (process.env.VIEWPOINT_ALLOWED_ORIGINS || '').split(',').map(x => x.trim()).filter(Boolean);
-      if (parsed.host !== host && !allow.includes(parsed.origin)) return json(res, 403, { error: 'مبدأ درخواست مجاز نیست.' });
-    } catch { return json(res, 403, { error: 'مبدأ درخواست نامعتبر است.' }); }
-  }
+  if (!origin || !host) return json(res, 403, { error: 'درخواست باید از مبدأ مجاز رابط کاربری ارسال شود.' });
+  try {
+    const parsed = new URL(origin);
+    const allow = (process.env.VIEWPOINT_ALLOWED_ORIGINS || '').split(',').map(x => x.trim()).filter(Boolean);
+    if (parsed.host !== host && !allow.includes(parsed.origin)) return json(res, 403, { error: 'مبدأ درخواست مجاز نیست.' });
+  } catch { return json(res, 403, { error: 'مبدأ درخواست نامعتبر است.' }); }
   if (!process.env.POLLINATIONS_API_KEY || !process.env.POLLINATIONS_IMAGE_MODEL) {
     return json(res, 503, { error: 'API آماده نیست؛ متغیرهای محرمانه POLLINATIONS_API_KEY و POLLINATIONS_IMAGE_MODEL را در Vercel تنظیم کنید.' });
   }
